@@ -1,0 +1,135 @@
+1. Tabla Usuarios
+idUsuario (INT, PRIMARY KEY, AUTO_INCREMENT)
+NombreUsuario (VARCHAR(50), NOT NULL)
+Contrasena (VARCHAR(255), NOT NULL)
+Rol (ENUM('superadmin', 'admin', 'trabajador'), NOT NULL)
+
+
+2. Tabla Proveedores
+idProveedor (INT, PRIMARY KEY, AUTO_INCREMENT)
+NombreProveedor (VARCHAR(100), NOT NULL)
+TelefonoProveedor (VARCHAR(20), NULL)
+CorreoElectronico (VARCHAR(100), NULL)
+DireccionProveedor (VARCHAR(255), NULL)
+
+
+3. Tabla Inventario
+CodigoProducto (VARCHAR(15), NOT NULL)
+DescripcionProducto (VARCHAR(150), NOT NULL)
+Stock (INT, NOT NULL)
+Precio (DECIMAL(10, 2), NOT NULL)
+
+
+4. Tabla Compras
+idCompra (INT, PRIMARY KEY, AUTO_INCREMENT)
+idProveedor (INT, FOREIGN KEY, NOT NULL)
+FechaCompra (DATETIME, NOT NULL)
+TotalCompra (Float, NOT NULL)
+idUsuario (INT, FOREIGN KEY, NOT NULL)   (Para saber cual usuario hizo la compra)
+
+
+5. Tabla DetallesCompras
+idDetalleCompra (INT, PRIMARY KEY, AUTO_INCREMENT)
+idCompra (INT, FOREIGN KEY, NOT NULL)
+CodigoProducto (INT, FOREIGN KEY, NOT NULL)
+Cantidad (INT, NOT NULL)
+PrecioUnitario (Float, NOT NULL)
+
+
+6. Tabla Ventas
+idVenta (INT, PRIMARY KEY, AUTO_INCREMENT)
+NombreCliente (VARCHAR(100), NULL)
+
+AutoCliente (VARCHAR(50), NULL)
+FechaVenta (DATETIME, NOT NULL)
+TotalVenta (DECIMAL(10, 2), NOT NULL)
+idUsuario (INT, FOREIGN KEY, NOT NULL)
+posibles:
+descuento (decimal()10,2)
+
+
+7. Tabla DetallesVentas
+idDetalleVenta (INT, PRIMARY KEY, AUTO_INCREMENT)
+idVenta (INT, FOREIGN KEY, NOT NULL)
+CodigoProducto (INT, FOREIGN KEY, NOT NULL)
+Cantidad (INT, NOT NULL)
+PrecioUnitario (DECIMAL(10, 2), NOT NULL)
+
+
+CREATE TABLE AperturaCierreCaja (
+    IdCaja INT AUTO_INCREMENT PRIMARY KEY,
+    FechaInicio DATETIME NOT NULL,
+    FechaCierre DATETIME NULL,  -- Se actualiza al cerrar la caja
+    MontoInicial FLOAT NOT NULL,
+    MontoFinal FLOAT NULL,  -- Se actualiza al cerrar la caja
+    IdUsuarioApertura INT NOT NULL,  -- Usuario que abre la caja
+    IdUsuarioCierre INT NULL,  -- Usuario que cierra la caja
+    FOREIGN KEY (IdUsuarioApertura) REFERENCES Usuarios(idUsuario),
+    FOREIGN KEY (IdUsuarioCierre) REFERENCES Usuarios(idUsuario)
+);
+
+
+CREATE TABLE MovimientosCaja (
+    IdMovimiento INT AUTO_INCREMENT PRIMARY KEY,
+    TipoMovimiento ENUM('venta', 'compra', 'gasto', 'retiro', 'deposito', 'otros') NOT NULL,
+    Monto FLOAT NOT NULL,
+    FechaMovimiento DATETIME NOT NULL,
+    IdUsuario INT NOT NULL,  -- Usuario que realiza el movimiento
+    IdVenta INT NULL,  -- Referencia opcional a una venta
+    IdCompra INT NULL,  -- Referencia opcional a una compra
+    Descripcion VARCHAR(100) NULL,  -- Detalles adicionales del movimiento
+    FOREIGN KEY (IdUsuario) REFERENCES Usuarios(idUsuario),
+    FOREIGN KEY (IdVenta) REFERENCES Ventas(idVenta),
+    FOREIGN KEY (IdCompra) REFERENCES Compras(idCompra)
+);
+
+
+
+
+
+
+8. Tabla Caja
+idMovimiento (INT, PRIMARY KEY, AUTO_INCREMENT)
+TipoMovimiento (ENUM('entrada', 'salida'), NOT NULL)
+Monto (DECIMAL(10, 2), NOT NULL)
+FechaMovimiento (DATETIME, NOT NULL)
+idUsuario (INT, FOREIGN KEY, NOT NULL)
+
+
+INSERT INTO detallescompras (idDetalleCompra, idCompra, CodigoProducto, Cantidad, PrecioUnitario)
+VALUES 
+(1, 1, '12334323', 1, 200.00),  -- Filtro de gasolina para cheyene 2000 a 2020
+(2, 1, '13124232', 4, 24.00);   -- Bujías
+
+
+
+Marca, modelo carro, las placas
+Modificar precio de la venta 
+CRUD CLIENTES  -- Si queda tiempo agregar esta tabla
+Agregar Ciudad al proveedor 
+
+Cosas por agregar:
+Inventario:
+Estante
+No es necesario agregar marca o modelo
+
+Venta:
+Agregar un estado.
+Realizar un modulo de ventas en espera.
+Producto que se va agregando que se vaya quitando del stock
+Acciones rápidas para el tema de los servicios 
+Compra:
+Agregar tema de productos rápido, ya que hay productos que no suelen manejar
+
+
+Clientes:
+IdCliente
+NombreCliente
+TeléfonoCliente
+
+Preguntar si debería agregar facturas v,:
+
+El tema de los tickets queda pendiente.
+
+
+
