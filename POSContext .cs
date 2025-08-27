@@ -13,6 +13,7 @@ using POS_CHITOS.Compras;
 using POS_CHITOS;
 
 using POS_CHITOS.PI;
+using POS_CHITOS.Clientes;
 
 namespace POS_CHITOS
 {
@@ -43,6 +44,8 @@ namespace POS_CHITOS
         public DbSet<CortesCaja> CortesCaja { get; set; }
 
         public DbSet<ProveedoresInventario> ProveedoresInventario { get; set; }
+
+        public DbSet<clientes> Clientes { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
