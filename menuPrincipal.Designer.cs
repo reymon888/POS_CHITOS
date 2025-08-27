@@ -38,6 +38,7 @@
             B_Inventario = new Button();
             B_NuevaVenta = new Button();
             PanelSuperior = new Panel();
+            B_Clientes = new Button();
             B_Ventas = new Button();
             B_Reportes = new Button();
             B_Cortes = new Button();
@@ -49,7 +50,6 @@
             pictureBox1 = new PictureBox();
             panelEscritorio = new Panel();
             pictureBox3 = new PictureBox();
-            B_Clientes = new Button();
             PanelLateral.SuspendLayout();
             PanelSuperior.SuspendLayout();
             panel1.SuspendLayout();
@@ -70,7 +70,7 @@
             PanelLateral.Controls.Add(B_NuevaVenta);
             PanelLateral.Dock = DockStyle.Left;
             PanelLateral.Location = new Point(0, 0);
-            PanelLateral.Margin = new Padding(4, 4, 4, 4);
+            PanelLateral.Margin = new Padding(4);
             PanelLateral.Name = "PanelLateral";
             PanelLateral.Size = new Size(132, 1241);
             PanelLateral.TabIndex = 0;
@@ -86,7 +86,7 @@
             B_Gastos.ForeColor = SystemColors.ButtonFace;
             B_Gastos.Image = Properties.Resources.salir;
             B_Gastos.Location = new Point(0, 1050);
-            B_Gastos.Margin = new Padding(4, 4, 4, 4);
+            B_Gastos.Margin = new Padding(4);
             B_Gastos.Name = "B_Gastos";
             B_Gastos.Size = new Size(132, 175);
             B_Gastos.TabIndex = 10;
@@ -106,7 +106,7 @@
             B_Usuarios.ForeColor = SystemColors.ButtonFace;
             B_Usuarios.Image = Properties.Resources.seguidores;
             B_Usuarios.Location = new Point(0, 875);
-            B_Usuarios.Margin = new Padding(4, 4, 4, 4);
+            B_Usuarios.Margin = new Padding(4);
             B_Usuarios.Name = "B_Usuarios";
             B_Usuarios.Size = new Size(132, 175);
             B_Usuarios.TabIndex = 9;
@@ -126,7 +126,7 @@
             B_Proveedores.ForeColor = SystemColors.ButtonFace;
             B_Proveedores.Image = Properties.Resources.mensajero;
             B_Proveedores.Location = new Point(0, 700);
-            B_Proveedores.Margin = new Padding(4, 4, 4, 4);
+            B_Proveedores.Margin = new Padding(4);
             B_Proveedores.Name = "B_Proveedores";
             B_Proveedores.Size = new Size(132, 175);
             B_Proveedores.TabIndex = 5;
@@ -146,7 +146,7 @@
             B_NuevaCompra.ForeColor = SystemColors.ButtonFace;
             B_NuevaCompra.Image = Properties.Resources.orden__1_;
             B_NuevaCompra.Location = new Point(0, 525);
-            B_NuevaCompra.Margin = new Padding(4, 4, 4, 4);
+            B_NuevaCompra.Margin = new Padding(4);
             B_NuevaCompra.Name = "B_NuevaCompra";
             B_NuevaCompra.Size = new Size(132, 175);
             B_NuevaCompra.TabIndex = 4;
@@ -165,7 +165,7 @@
             B_Entradas.ForeColor = SystemColors.ButtonFace;
             B_Entradas.Image = Properties.Resources.dinero;
             B_Entradas.Location = new Point(0, 350);
-            B_Entradas.Margin = new Padding(4, 4, 4, 4);
+            B_Entradas.Margin = new Padding(4);
             B_Entradas.Name = "B_Entradas";
             B_Entradas.Size = new Size(132, 175);
             B_Entradas.TabIndex = 3;
@@ -185,7 +185,7 @@
             B_Inventario.ForeColor = SystemColors.ButtonFace;
             B_Inventario.Image = Properties.Resources.en_stock;
             B_Inventario.Location = new Point(0, 175);
-            B_Inventario.Margin = new Padding(4, 4, 4, 4);
+            B_Inventario.Margin = new Padding(4);
             B_Inventario.Name = "B_Inventario";
             B_Inventario.Size = new Size(132, 175);
             B_Inventario.TabIndex = 2;
@@ -205,7 +205,7 @@
             B_NuevaVenta.ForeColor = SystemColors.ButtonHighlight;
             B_NuevaVenta.Image = Properties.Resources.punto_de_venta__1_;
             B_NuevaVenta.Location = new Point(0, 0);
-            B_NuevaVenta.Margin = new Padding(4, 4, 4, 4);
+            B_NuevaVenta.Margin = new Padding(4);
             B_NuevaVenta.Name = "B_NuevaVenta";
             B_NuevaVenta.Size = new Size(132, 175);
             B_NuevaVenta.TabIndex = 1;
@@ -226,11 +226,32 @@
             PanelSuperior.Controls.Add(panel1);
             PanelSuperior.Dock = DockStyle.Top;
             PanelSuperior.Location = new Point(132, 0);
-            PanelSuperior.Margin = new Padding(4, 4, 4, 4);
+            PanelSuperior.Margin = new Padding(4);
             PanelSuperior.Name = "PanelSuperior";
             PanelSuperior.Size = new Size(1678, 141);
             PanelSuperior.TabIndex = 1;
             PanelSuperior.Paint += menuSuperior_Paint;
+            // 
+            // B_Clientes
+            // 
+            B_Clientes.AutoSize = true;
+            B_Clientes.BackColor = Color.FromArgb(26, 77, 128);
+            B_Clientes.Dock = DockStyle.Left;
+            B_Clientes.FlatAppearance.BorderSize = 0;
+            B_Clientes.FlatStyle = FlatStyle.Flat;
+            B_Clientes.Font = new Font("Arial", 9F, FontStyle.Bold);
+            B_Clientes.ForeColor = SystemColors.ButtonHighlight;
+            B_Clientes.Image = Properties.Resources.conductor;
+            B_Clientes.Location = new Point(503, 0);
+            B_Clientes.Margin = new Padding(4);
+            B_Clientes.Name = "B_Clientes";
+            B_Clientes.Size = new Size(177, 141);
+            B_Clientes.TabIndex = 15;
+            B_Clientes.TabStop = false;
+            B_Clientes.Text = "Clientes (Ctrl + L )";
+            B_Clientes.TextImageRelation = TextImageRelation.ImageAboveText;
+            B_Clientes.UseVisualStyleBackColor = false;
+            B_Clientes.Click += B_Clientes_Click;
             // 
             // B_Ventas
             // 
@@ -243,7 +264,7 @@
             B_Ventas.ForeColor = SystemColors.ButtonHighlight;
             B_Ventas.Image = Properties.Resources.grafico_de_barras;
             B_Ventas.Location = new Point(343, 0);
-            B_Ventas.Margin = new Padding(4, 4, 4, 4);
+            B_Ventas.Margin = new Padding(4);
             B_Ventas.Name = "B_Ventas";
             B_Ventas.Size = new Size(160, 141);
             B_Ventas.TabIndex = 14;
@@ -264,7 +285,7 @@
             B_Reportes.ForeColor = SystemColors.ButtonHighlight;
             B_Reportes.Image = Properties.Resources.reporte;
             B_Reportes.Location = new Point(171, 0);
-            B_Reportes.Margin = new Padding(4, 4, 4, 4);
+            B_Reportes.Margin = new Padding(4);
             B_Reportes.Name = "B_Reportes";
             B_Reportes.Size = new Size(172, 141);
             B_Reportes.TabIndex = 13;
@@ -284,7 +305,7 @@
             B_Cortes.ForeColor = SystemColors.ButtonFace;
             B_Cortes.Image = Properties.Resources.cajero_automatico;
             B_Cortes.Location = new Point(1023, 0);
-            B_Cortes.Margin = new Padding(4, 4, 4, 4);
+            B_Cortes.Margin = new Padding(4);
             B_Cortes.Name = "B_Cortes";
             B_Cortes.Size = new Size(139, 141);
             B_Cortes.TabIndex = 4;
@@ -305,7 +326,7 @@
             B_Compras.ForeColor = SystemColors.ButtonHighlight;
             B_Compras.Image = Properties.Resources.tienda_online__1_;
             B_Compras.Location = new Point(0, 0);
-            B_Compras.Margin = new Padding(4, 4, 4, 4);
+            B_Compras.Margin = new Padding(4);
             B_Compras.Name = "B_Compras";
             B_Compras.Size = new Size(171, 141);
             B_Compras.TabIndex = 12;
@@ -324,7 +345,7 @@
             panel1.Controls.Add(pictureBox1);
             panel1.Dock = DockStyle.Right;
             panel1.Location = new Point(1162, 0);
-            panel1.Margin = new Padding(4, 4, 4, 4);
+            panel1.Margin = new Padding(4);
             panel1.Name = "panel1";
             panel1.Size = new Size(516, 141);
             panel1.TabIndex = 0;
@@ -339,7 +360,7 @@
             B_Salir.ForeColor = SystemColors.ButtonFace;
             B_Salir.Image = Properties.Resources.boton_x;
             B_Salir.Location = new Point(431, 0);
-            B_Salir.Margin = new Padding(4, 4, 4, 4);
+            B_Salir.Margin = new Padding(4);
             B_Salir.Name = "B_Salir";
             B_Salir.Size = new Size(85, 141);
             B_Salir.TabIndex = 11;
@@ -378,7 +399,7 @@
             // 
             pictureBox1.Image = Properties.Resources.cajero;
             pictureBox1.Location = new Point(22, 21);
-            pictureBox1.Margin = new Padding(4, 4, 4, 4);
+            pictureBox1.Margin = new Padding(4);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(64, 64);
             pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
@@ -391,7 +412,7 @@
             panelEscritorio.Controls.Add(pictureBox3);
             panelEscritorio.Dock = DockStyle.Fill;
             panelEscritorio.Location = new Point(132, 141);
-            panelEscritorio.Margin = new Padding(4, 4, 4, 4);
+            panelEscritorio.Margin = new Padding(4);
             panelEscritorio.Name = "panelEscritorio";
             panelEscritorio.Size = new Size(1678, 1100);
             panelEscritorio.TabIndex = 2;
@@ -402,32 +423,12 @@
             pictureBox3.BackColor = SystemColors.ButtonHighlight;
             pictureBox3.Image = Properties.Resources.Chitos__1_;
             pictureBox3.Location = new Point(4, 8);
-            pictureBox3.Margin = new Padding(4, 4, 4, 4);
+            pictureBox3.Margin = new Padding(4);
             pictureBox3.Name = "pictureBox3";
             pictureBox3.Size = new Size(1666, 1115);
             pictureBox3.SizeMode = PictureBoxSizeMode.CenterImage;
             pictureBox3.TabIndex = 0;
             pictureBox3.TabStop = false;
-            // 
-            // B_Clientes
-            // 
-            B_Clientes.AutoSize = true;
-            B_Clientes.BackColor = Color.FromArgb(26, 77, 128);
-            B_Clientes.Dock = DockStyle.Left;
-            B_Clientes.FlatAppearance.BorderSize = 0;
-            B_Clientes.FlatStyle = FlatStyle.Flat;
-            B_Clientes.Font = new Font("Arial", 9F, FontStyle.Bold);
-            B_Clientes.ForeColor = SystemColors.ButtonHighlight;
-            B_Clientes.Image = Properties.Resources.grafico_de_barras;
-            B_Clientes.Location = new Point(503, 0);
-            B_Clientes.Margin = new Padding(4);
-            B_Clientes.Name = "B_Clientes";
-            B_Clientes.Size = new Size(160, 141);
-            B_Clientes.TabIndex = 15;
-            B_Clientes.TabStop = false;
-            B_Clientes.Text = "Clientes";
-            B_Clientes.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_Clientes.UseVisualStyleBackColor = false;
             // 
             // menuPrincipal
             // 
@@ -439,7 +440,7 @@
             Controls.Add(PanelSuperior);
             Controls.Add(PanelLateral);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            Margin = new Padding(4, 4, 4, 4);
+            Margin = new Padding(4);
             Name = "menuPrincipal";
             Text = "Punto de Venta Chito's";
             Load += Form1_Load;
