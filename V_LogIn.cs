@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using POS_CHITOS.Avisos;
+using POS_CHITOS.Usuarios;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,10 +23,18 @@ namespace POS_CHITOS
         {
             InitializeComponent();
         
-            TB_Usuario.Text = "Ramon";
+            TB_Usuario.Text = "Administrador Chito's";
             TB_PW.Text = "1234";
 
             TB_Usuario.Focus();
+            //centrar la ventana
+            this.StartPosition = FormStartPosition.CenterScreen;
+            //no cambiar tamaño de la ventana
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.ResumeLayout(false);
+
 
         }
 
@@ -38,33 +48,33 @@ namespace POS_CHITOS
             string nombreUsuario = TB_Usuario.Text;
             string contrasena = TB_PW.Text;
 
-            // Hashear la contraseña para compararla con la base de datos
-            string contrasenaHasheada = BitConverter.ToString(
-                SHA256.Create().ComputeHash(System.Text.Encoding.UTF8.GetBytes(contrasena))
-            ).Replace("-", "");
+            // Hashear la contraseña
+            string contrasenaHasheada = BitConverter.ToString(SHA256.Create().ComputeHash(System.Text.Encoding.UTF8.GetBytes(contrasena))).Replace("-", "");
 
             using (var context = new POSContext(new DbContextOptions<POSContext>()))
             {
-                // Verificar si el usuario existe con la contraseña correcta y está activo
-                var usuario = context.Usuarios.FirstOrDefault(u => u.NombreUsuario == nombreUsuario && u.Contrasena == contrasenaHasheada);
+                // Crear instancia de los servicios
+                var loginService = new LoginService(context);
+                var cortesService = new CortesService(context);
 
-                if (usuario != null && usuario.Activo)
+                // Autenticar el usuario
+                var usuario = loginService.AutenticarUsuario(nombreUsuario, contrasenaHasheada);
+
+                if (usuario != null)
                 {
-                    // Ocultar el formulario de login, no lo cierres
+                    // Verificar si hay corte pendiente
+                    if (cortesService.ObtenerCorteNoRealizado(usuario.Id) == null)
+                    {
+                        // Si no hay corte, abrir ventana para ingresar monto inicial
+                        var formMontoInicial = new V_MontoInicial(usuario.Id, cortesService);
+                        formMontoInicial.ShowDialog();
+                    }
+
+                    // Ocultar el formulario de login y abrir el menú principal
                     this.Hide();
-
-                    // Abrir el menú principal
                     var mainMenu = new menuPrincipal(usuario);
-
-                    // Mostrar el menú principal de forma modal
                     mainMenu.ShowDialog();
-
-                    // Una vez que el menú principal se cierre, cerrar el formulario de login
                     this.Close();
-                }
-                else if (usuario != null && !usuario.Activo)
-                {
-                    MessageBox.Show("El usuario está desactivado, contacta al administrador.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 else
                 {

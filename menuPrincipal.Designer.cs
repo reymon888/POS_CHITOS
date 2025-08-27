@@ -28,68 +28,70 @@
         /// </summary>
         private void InitializeComponent()
         {
-            menuLateral = new Panel();
-            button1 = new Button();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(menuPrincipal));
+            PanelLateral = new Panel();
+            B_Gastos = new Button();
             B_Usuarios = new Button();
             B_Proveedores = new Button();
             B_NuevaCompra = new Button();
             B_Entradas = new Button();
             B_Inventario = new Button();
             B_NuevaVenta = new Button();
-            menuSuperior = new Panel();
-            panel2 = new Panel();
+            PanelSuperior = new Panel();
             B_Ventas = new Button();
-            button2 = new Button();
+            B_Reportes = new Button();
+            B_Cortes = new Button();
             B_Compras = new Button();
             panel1 = new Panel();
-            button6 = new Button();
+            B_Salir = new Button();
             labelCargo = new Label();
             labelUsuario = new Label();
             pictureBox1 = new PictureBox();
             panelEscritorio = new Panel();
             pictureBox3 = new PictureBox();
-            menuLateral.SuspendLayout();
-            menuSuperior.SuspendLayout();
-            panel2.SuspendLayout();
+            PanelLateral.SuspendLayout();
+            PanelSuperior.SuspendLayout();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panelEscritorio.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
             SuspendLayout();
             // 
-            // menuLateral
+            // PanelLateral
             // 
-            menuLateral.BackColor = Color.FromArgb(51, 51, 51);
-            menuLateral.Controls.Add(button1);
-            menuLateral.Controls.Add(B_Usuarios);
-            menuLateral.Controls.Add(B_Proveedores);
-            menuLateral.Controls.Add(B_NuevaCompra);
-            menuLateral.Controls.Add(B_Entradas);
-            menuLateral.Controls.Add(B_Inventario);
-            menuLateral.Controls.Add(B_NuevaVenta);
-            menuLateral.Dock = DockStyle.Left;
-            menuLateral.Location = new Point(0, 0);
-            menuLateral.Name = "menuLateral";
-            menuLateral.Size = new Size(106, 936);
-            menuLateral.TabIndex = 0;
-            menuLateral.Paint += menuLateral_Paint;
+            PanelLateral.BackColor = Color.FromArgb(26, 77, 128);
+            PanelLateral.Controls.Add(B_Gastos);
+            PanelLateral.Controls.Add(B_Usuarios);
+            PanelLateral.Controls.Add(B_Proveedores);
+            PanelLateral.Controls.Add(B_NuevaCompra);
+            PanelLateral.Controls.Add(B_Entradas);
+            PanelLateral.Controls.Add(B_Inventario);
+            PanelLateral.Controls.Add(B_NuevaVenta);
+            PanelLateral.Dock = DockStyle.Left;
+            PanelLateral.Location = new Point(0, 0);
+            PanelLateral.Name = "PanelLateral";
+            PanelLateral.Size = new Size(106, 993);
+            PanelLateral.TabIndex = 0;
+            PanelLateral.Paint += menuLateral_Paint;
             // 
-            // button1
+            // B_Gastos
             // 
-            button1.AutoSize = true;
-            button1.Dock = DockStyle.Top;
-            button1.FlatAppearance.BorderSize = 0;
-            button1.FlatStyle = FlatStyle.Flat;
-            button1.Font = new Font("Arial", 9F, FontStyle.Bold);
-            button1.ForeColor = SystemColors.ButtonFace;
-            button1.Image = Properties.Resources.salir;
-            button1.Location = new Point(0, 840);
-            button1.Name = "button1";
-            button1.Size = new Size(106, 140);
-            button1.TabIndex = 10;
-            button1.Text = "Gastos $-";
-            button1.TextImageRelation = TextImageRelation.ImageAboveText;
-            button1.UseVisualStyleBackColor = true;
+            B_Gastos.AutoSize = true;
+            B_Gastos.Dock = DockStyle.Top;
+            B_Gastos.FlatAppearance.BorderSize = 0;
+            B_Gastos.FlatStyle = FlatStyle.Flat;
+            B_Gastos.Font = new Font("Arial", 9F, FontStyle.Bold);
+            B_Gastos.ForeColor = SystemColors.ButtonFace;
+            B_Gastos.Image = Properties.Resources.salir;
+            B_Gastos.Location = new Point(0, 840);
+            B_Gastos.Name = "B_Gastos";
+            B_Gastos.Size = new Size(106, 140);
+            B_Gastos.TabIndex = 10;
+            B_Gastos.TabStop = false;
+            B_Gastos.Text = "Gastos $-  (F7)";
+            B_Gastos.TextImageRelation = TextImageRelation.ImageAboveText;
+            B_Gastos.UseVisualStyleBackColor = true;
+            B_Gastos.Click += B_Gastos_Click;
             // 
             // B_Usuarios
             // 
@@ -104,7 +106,8 @@
             B_Usuarios.Name = "B_Usuarios";
             B_Usuarios.Size = new Size(106, 140);
             B_Usuarios.TabIndex = 9;
-            B_Usuarios.Text = "Usuarios (F1})";
+            B_Usuarios.TabStop = false;
+            B_Usuarios.Text = "Usuarios (F6)";
             B_Usuarios.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Usuarios.UseVisualStyleBackColor = true;
             B_Usuarios.Click += B_Usuarios_Click;
@@ -122,7 +125,8 @@
             B_Proveedores.Name = "B_Proveedores";
             B_Proveedores.Size = new Size(106, 140);
             B_Proveedores.TabIndex = 5;
-            B_Proveedores.Text = "Proveedor (F1)";
+            B_Proveedores.TabStop = false;
+            B_Proveedores.Text = "Proveedor  (F5)";
             B_Proveedores.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Proveedores.UseVisualStyleBackColor = true;
             B_Proveedores.Click += button4_Click;
@@ -140,7 +144,7 @@
             B_NuevaCompra.Name = "B_NuevaCompra";
             B_NuevaCompra.Size = new Size(106, 140);
             B_NuevaCompra.TabIndex = 4;
-            B_NuevaCompra.Text = "Realizar Compra (F1)";
+            B_NuevaCompra.Text = "Realizar Compra   (F4)";
             B_NuevaCompra.TextImageRelation = TextImageRelation.ImageAboveText;
             B_NuevaCompra.UseVisualStyleBackColor = true;
             B_NuevaCompra.Click += B_NuevaCompra_Click;
@@ -158,7 +162,8 @@
             B_Entradas.Name = "B_Entradas";
             B_Entradas.Size = new Size(106, 140);
             B_Entradas.TabIndex = 3;
-            B_Entradas.Text = "Ingresos (F1)";
+            B_Entradas.TabStop = false;
+            B_Entradas.Text = "Ingresos (F3)";
             B_Entradas.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Entradas.UseVisualStyleBackColor = true;
             B_Entradas.Click += B_caja_Click;
@@ -176,7 +181,8 @@
             B_Inventario.Name = "B_Inventario";
             B_Inventario.Size = new Size(106, 140);
             B_Inventario.TabIndex = 2;
-            B_Inventario.Text = "Inventario (F1)";
+            B_Inventario.TabStop = false;
+            B_Inventario.Text = "Inventario (F2)";
             B_Inventario.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Inventario.UseVisualStyleBackColor = true;
             B_Inventario.Click += B_Inventario_Click;
@@ -194,39 +200,32 @@
             B_NuevaVenta.Name = "B_NuevaVenta";
             B_NuevaVenta.Size = new Size(106, 140);
             B_NuevaVenta.TabIndex = 1;
+            B_NuevaVenta.TabStop = false;
             B_NuevaVenta.Text = "Realizar Venta (F1)";
             B_NuevaVenta.TextImageRelation = TextImageRelation.ImageAboveText;
             B_NuevaVenta.UseVisualStyleBackColor = true;
             B_NuevaVenta.Click += B_NuevaVenta_Click;
             // 
-            // menuSuperior
+            // PanelSuperior
             // 
-            menuSuperior.BackColor = Color.FromArgb(26, 77, 128);
-            menuSuperior.Controls.Add(panel2);
-            menuSuperior.Controls.Add(panel1);
-            menuSuperior.Dock = DockStyle.Top;
-            menuSuperior.Location = new Point(106, 0);
-            menuSuperior.Name = "menuSuperior";
-            menuSuperior.Size = new Size(1342, 113);
-            menuSuperior.TabIndex = 1;
-            menuSuperior.Paint += menuSuperior_Paint;
-            // 
-            // panel2
-            // 
-            panel2.BackColor = Color.FromArgb(51, 51, 51);
-            panel2.Controls.Add(B_Ventas);
-            panel2.Controls.Add(button2);
-            panel2.Controls.Add(B_Compras);
-            panel2.Location = new Point(0, 3);
-            panel2.Name = "panel2";
-            panel2.Size = new Size(322, 110);
-            panel2.TabIndex = 1;
+            PanelSuperior.BackColor = Color.FromArgb(26, 77, 128);
+            PanelSuperior.Controls.Add(B_Ventas);
+            PanelSuperior.Controls.Add(B_Reportes);
+            PanelSuperior.Controls.Add(B_Cortes);
+            PanelSuperior.Controls.Add(B_Compras);
+            PanelSuperior.Controls.Add(panel1);
+            PanelSuperior.Dock = DockStyle.Top;
+            PanelSuperior.Location = new Point(106, 0);
+            PanelSuperior.Name = "PanelSuperior";
+            PanelSuperior.Size = new Size(1342, 113);
+            PanelSuperior.TabIndex = 1;
+            PanelSuperior.Paint += menuSuperior_Paint;
             // 
             // B_Ventas
             // 
             B_Ventas.AutoSize = true;
             B_Ventas.BackColor = Color.FromArgb(26, 77, 128);
-            B_Ventas.Dock = DockStyle.Top;
+            B_Ventas.Dock = DockStyle.Left;
             B_Ventas.FlatAppearance.BorderSize = 0;
             B_Ventas.FlatStyle = FlatStyle.Flat;
             B_Ventas.Font = new Font("Arial", 9F, FontStyle.Bold);
@@ -234,30 +233,52 @@
             B_Ventas.Image = Properties.Resources.grafico_de_barras;
             B_Ventas.Location = new Point(227, 0);
             B_Ventas.Name = "B_Ventas";
-            B_Ventas.Size = new Size(95, 107);
+            B_Ventas.Size = new Size(104, 113);
             B_Ventas.TabIndex = 14;
-            B_Ventas.Text = "Ventas (F1)";
+            B_Ventas.TabStop = false;
+            B_Ventas.Text = "Ventas (F10)";
             B_Ventas.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Ventas.UseVisualStyleBackColor = false;
             B_Ventas.Click += B_Ventas_Click;
             // 
-            // button2
+            // B_Reportes
             // 
-            button2.AutoSize = true;
-            button2.BackColor = Color.FromArgb(26, 77, 128);
-            button2.Dock = DockStyle.Left;
-            button2.FlatAppearance.BorderSize = 0;
-            button2.FlatStyle = FlatStyle.Flat;
-            button2.Font = new Font("Arial", 9F, FontStyle.Bold);
-            button2.ForeColor = SystemColors.ButtonHighlight;
-            button2.Image = Properties.Resources.reporte;
-            button2.Location = new Point(112, 0);
-            button2.Name = "button2";
-            button2.Size = new Size(115, 110);
-            button2.TabIndex = 13;
-            button2.Text = "Reportes (F1)";
-            button2.TextImageRelation = TextImageRelation.ImageAboveText;
-            button2.UseVisualStyleBackColor = false;
+            B_Reportes.AutoSize = true;
+            B_Reportes.BackColor = Color.FromArgb(26, 77, 128);
+            B_Reportes.Dock = DockStyle.Left;
+            B_Reportes.FlatAppearance.BorderSize = 0;
+            B_Reportes.FlatStyle = FlatStyle.Flat;
+            B_Reportes.Font = new Font("Arial", 9F, FontStyle.Bold);
+            B_Reportes.ForeColor = SystemColors.ButtonHighlight;
+            B_Reportes.Image = Properties.Resources.reporte;
+            B_Reportes.Location = new Point(112, 0);
+            B_Reportes.Name = "B_Reportes";
+            B_Reportes.Size = new Size(115, 113);
+            B_Reportes.TabIndex = 13;
+            B_Reportes.TabStop = false;
+            B_Reportes.Text = "Reportes (F9)";
+            B_Reportes.TextImageRelation = TextImageRelation.ImageAboveText;
+            B_Reportes.UseVisualStyleBackColor = false;
+            B_Reportes.Click += B_Reportes_Click_1;
+            // 
+            // B_Cortes
+            // 
+            B_Cortes.AutoSize = true;
+            B_Cortes.Dock = DockStyle.Right;
+            B_Cortes.FlatAppearance.BorderSize = 0;
+            B_Cortes.FlatStyle = FlatStyle.Flat;
+            B_Cortes.Font = new Font("Arial", 9F, FontStyle.Bold);
+            B_Cortes.ForeColor = SystemColors.ButtonFace;
+            B_Cortes.Image = Properties.Resources.cajero_automatico;
+            B_Cortes.Location = new Point(818, 0);
+            B_Cortes.Name = "B_Cortes";
+            B_Cortes.Size = new Size(111, 113);
+            B_Cortes.TabIndex = 4;
+            B_Cortes.TabStop = false;
+            B_Cortes.Text = "Caja (F11)";
+            B_Cortes.TextImageRelation = TextImageRelation.ImageAboveText;
+            B_Cortes.UseVisualStyleBackColor = true;
+            B_Cortes.Click += B_Cortes_Click;
             // 
             // B_Compras
             // 
@@ -271,9 +292,10 @@
             B_Compras.Image = Properties.Resources.tienda_online__1_;
             B_Compras.Location = new Point(0, 0);
             B_Compras.Name = "B_Compras";
-            B_Compras.Size = new Size(112, 110);
+            B_Compras.Size = new Size(112, 113);
             B_Compras.TabIndex = 12;
-            B_Compras.Text = "Compras (F1)";
+            B_Compras.TabStop = false;
+            B_Compras.Text = "Compras (F8)";
             B_Compras.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Compras.UseVisualStyleBackColor = false;
             B_Compras.Click += B_Compras_Click;
@@ -281,7 +303,7 @@
             // panel1
             // 
             panel1.BackColor = Color.FromArgb(51, 51, 51);
-            panel1.Controls.Add(button6);
+            panel1.Controls.Add(B_Salir);
             panel1.Controls.Add(labelCargo);
             panel1.Controls.Add(labelUsuario);
             panel1.Controls.Add(pictureBox1);
@@ -291,31 +313,33 @@
             panel1.Size = new Size(413, 113);
             panel1.TabIndex = 0;
             // 
-            // button6
+            // B_Salir
             // 
-            button6.AutoSize = true;
-            button6.Dock = DockStyle.Right;
-            button6.FlatAppearance.BorderSize = 0;
-            button6.FlatStyle = FlatStyle.Flat;
-            button6.Font = new Font("Arial", 9F, FontStyle.Bold);
-            button6.ForeColor = SystemColors.ButtonFace;
-            button6.Image = Properties.Resources.boton_x;
-            button6.Location = new Point(265, 0);
-            button6.Name = "button6";
-            button6.Size = new Size(148, 113);
-            button6.TabIndex = 11;
-            button6.Text = "Cerrar Sesión (F1)";
-            button6.TextImageRelation = TextImageRelation.ImageAboveText;
-            button6.UseVisualStyleBackColor = true;
+            B_Salir.AutoSize = true;
+            B_Salir.Dock = DockStyle.Right;
+            B_Salir.FlatAppearance.BorderSize = 0;
+            B_Salir.FlatStyle = FlatStyle.Flat;
+            B_Salir.Font = new Font("Arial", 9F, FontStyle.Bold);
+            B_Salir.ForeColor = SystemColors.ButtonFace;
+            B_Salir.Image = Properties.Resources.boton_x;
+            B_Salir.Location = new Point(356, 0);
+            B_Salir.Name = "B_Salir";
+            B_Salir.Size = new Size(57, 113);
+            B_Salir.TabIndex = 11;
+            B_Salir.TabStop = false;
+            B_Salir.Text = " (F12)";
+            B_Salir.TextImageRelation = TextImageRelation.ImageAboveText;
+            B_Salir.UseVisualStyleBackColor = true;
+            B_Salir.Click += B_Salir_Click;
             // 
             // labelCargo
             // 
             labelCargo.AutoSize = true;
-            labelCargo.Font = new Font("Arial Rounded MT Bold", 12F);
+            labelCargo.Font = new Font("Segoe UI", 12F);
             labelCargo.ForeColor = SystemColors.ButtonHighlight;
-            labelCargo.Location = new Point(134, 58);
+            labelCargo.Location = new Point(100, 56);
             labelCargo.Name = "labelCargo";
-            labelCargo.Size = new Size(71, 23);
+            labelCargo.Size = new Size(65, 28);
             labelCargo.TabIndex = 3;
             labelCargo.Text = "Cargo";
             // 
@@ -323,20 +347,21 @@
             // 
             labelUsuario.AutoEllipsis = true;
             labelUsuario.AutoSize = true;
-            labelUsuario.Font = new Font("Arial Rounded MT Bold", 12F);
+            labelUsuario.Font = new Font("Segoe UI", 12F);
             labelUsuario.ForeColor = SystemColors.ButtonHighlight;
-            labelUsuario.Location = new Point(134, 29);
+            labelUsuario.Location = new Point(100, 27);
             labelUsuario.Name = "labelUsuario";
-            labelUsuario.Size = new Size(107, 23);
+            labelUsuario.Size = new Size(99, 28);
             labelUsuario.TabIndex = 1;
             labelUsuario.Text = "Nickname";
             // 
             // pictureBox1
             // 
-            pictureBox1.Image = Properties.Resources.jugador__1_;
-            pictureBox1.Location = new Point(35, 12);
+            pictureBox1.Image = Properties.Resources.cajero;
+            pictureBox1.Location = new Point(18, 17);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(93, 89);
+            pictureBox1.Size = new Size(64, 64);
+            pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             // 
@@ -347,17 +372,18 @@
             panelEscritorio.Dock = DockStyle.Fill;
             panelEscritorio.Location = new Point(106, 113);
             panelEscritorio.Name = "panelEscritorio";
-            panelEscritorio.Size = new Size(1342, 823);
+            panelEscritorio.Size = new Size(1342, 880);
             panelEscritorio.TabIndex = 2;
             // 
             // pictureBox3
             // 
             pictureBox3.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             pictureBox3.BackColor = SystemColors.ButtonHighlight;
-            pictureBox3.Image = Properties.Resources.logo_chitos_oficial_xd;
-            pictureBox3.Location = new Point(6, 6);
+            pictureBox3.Image = Properties.Resources.Chitos__1_;
+            pictureBox3.Location = new Point(3, 6);
             pictureBox3.Name = "pictureBox3";
-            pictureBox3.Size = new Size(1333, 817);
+            pictureBox3.Size = new Size(1333, 892);
+            pictureBox3.SizeMode = PictureBoxSizeMode.CenterImage;
             pictureBox3.TabIndex = 0;
             pictureBox3.TabStop = false;
             // 
@@ -366,18 +392,19 @@
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.ButtonHighlight;
-            ClientSize = new Size(1448, 936);
+            ClientSize = new Size(1448, 993);
             Controls.Add(panelEscritorio);
-            Controls.Add(menuSuperior);
-            Controls.Add(menuLateral);
+            Controls.Add(PanelSuperior);
+            Controls.Add(PanelLateral);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "menuPrincipal";
-            Text = "Form1";
+            Text = "Punto de Venta Chito's";
             Load += Form1_Load;
-            menuLateral.ResumeLayout(false);
-            menuLateral.PerformLayout();
-            menuSuperior.ResumeLayout(false);
-            panel2.ResumeLayout(false);
-            panel2.PerformLayout();
+            KeyDown += menuPrincipal_KeyDown;
+            PanelLateral.ResumeLayout(false);
+            PanelLateral.PerformLayout();
+            PanelSuperior.ResumeLayout(false);
+            PanelSuperior.PerformLayout();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
@@ -388,8 +415,8 @@
 
         #endregion
 
-        private Panel menuLateral;
-        private Panel menuSuperior;
+        private Panel PanelLateral;
+        private Panel PanelSuperior;
         private Panel panelEscritorio;
         private Button B_NuevaVenta;
         private Panel panel1;
@@ -401,12 +428,12 @@
         private Button B_Inventario;
         private Label labelCargo;
         private Button B_Usuarios;
-        private Panel panel2;
         private Button B_Ventas;
-        private Button button2;
+        private Button B_Reportes;
         private Button B_Compras;
-        private Button button6;
-        private Button button1;
+        private Button B_Salir;
+        private Button B_Gastos;
         private PictureBox pictureBox3;
+        private Button B_Cortes;
     }
 }

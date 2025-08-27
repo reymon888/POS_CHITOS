@@ -1,0 +1,183 @@
+﻿namespace POS_CHITOS.Categorias
+{
+    partial class V_ModificarCategoriaInventario
+    {
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(V_ModificarCategoriaInventario));
+            label1 = new Label();
+            panel2 = new Panel();
+            pictureBox2 = new PictureBox();
+            panel1 = new Panel();
+            B_Guardar = new Button();
+            label7 = new Label();
+            TB_Estante = new TextBox();
+            B_Cancelar = new Button();
+            TB_NombreCategoria = new TextBox();
+            panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
+            SuspendLayout();
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI Semibold", 19.8000011F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.ForeColor = SystemColors.ActiveCaptionText;
+            label1.Location = new Point(198, 21);
+            label1.Name = "label1";
+            label1.Size = new Size(326, 46);
+            label1.TabIndex = 1;
+            label1.Text = "Modificar Categoria";
+            // 
+            // panel2
+            // 
+            panel2.BackColor = Color.WhiteSmoke;
+            panel2.Controls.Add(pictureBox2);
+            panel2.Controls.Add(panel1);
+            panel2.Controls.Add(label1);
+            panel2.Controls.Add(B_Guardar);
+            panel2.Controls.Add(label7);
+            panel2.Controls.Add(TB_Estante);
+            panel2.Controls.Add(B_Cancelar);
+            panel2.Controls.Add(TB_NombreCategoria);
+            panel2.Dock = DockStyle.Fill;
+            panel2.Location = new Point(0, 0);
+            panel2.Name = "panel2";
+            panel2.Size = new Size(706, 364);
+            panel2.TabIndex = 5;
+            // 
+            // pictureBox2
+            // 
+            pictureBox2.Image = Properties.Resources.etiqueta__1_;
+            pictureBox2.Location = new Point(112, 12);
+            pictureBox2.Name = "pictureBox2";
+            pictureBox2.Size = new Size(64, 64);
+            pictureBox2.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBox2.TabIndex = 16;
+            pictureBox2.TabStop = false;
+            // 
+            // panel1
+            // 
+            panel1.BackColor = Color.FromArgb(26, 77, 128);
+            panel1.Location = new Point(65, 103);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(581, 4);
+            panel1.TabIndex = 15;
+            // 
+            // B_Guardar
+            // 
+            B_Guardar.AutoSize = true;
+            B_Guardar.BackColor = Color.FromArgb(26, 77, 128);
+            B_Guardar.Font = new Font("Arial", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            B_Guardar.ForeColor = SystemColors.ButtonHighlight;
+            B_Guardar.Image = Properties.Resources.salvar1;
+            B_Guardar.Location = new Point(161, 266);
+            B_Guardar.Name = "B_Guardar";
+            B_Guardar.Size = new Size(191, 70);
+            B_Guardar.TabIndex = 13;
+            B_Guardar.Text = "Guardar";
+            B_Guardar.TextAlign = ContentAlignment.MiddleRight;
+            B_Guardar.TextImageRelation = TextImageRelation.ImageBeforeText;
+            B_Guardar.UseVisualStyleBackColor = false;
+            B_Guardar.Click += B_Guardar_Click;
+            // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Font = new Font("Segoe UI Semibold", 13.8F, FontStyle.Bold);
+            label7.Location = new Point(248, 144);
+            label7.Name = "label7";
+            label7.Size = new Size(208, 31);
+            label7.TabIndex = 0;
+            label7.Text = "Nombre Categoria";
+            // 
+            // TB_Estante
+            // 
+            TB_Estante.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            TB_Estante.Font = new Font("Segoe UI", 13.8F);
+            TB_Estante.Location = new Point(1553, 219);
+            TB_Estante.Name = "TB_Estante";
+            TB_Estante.Size = new Size(259, 38);
+            TB_Estante.TabIndex = 4;
+            // 
+            // B_Cancelar
+            // 
+            B_Cancelar.AutoSize = true;
+            B_Cancelar.BackColor = Color.Silver;
+            B_Cancelar.FlatAppearance.BorderSize = 0;
+            B_Cancelar.Font = new Font("Arial", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            B_Cancelar.Image = Properties.Resources.cerrar;
+            B_Cancelar.Location = new Point(358, 266);
+            B_Cancelar.Name = "B_Cancelar";
+            B_Cancelar.Size = new Size(191, 70);
+            B_Cancelar.TabIndex = 9;
+            B_Cancelar.Text = "  Cancelar ";
+            B_Cancelar.TextAlign = ContentAlignment.MiddleRight;
+            B_Cancelar.TextImageRelation = TextImageRelation.ImageBeforeText;
+            B_Cancelar.UseVisualStyleBackColor = false;
+            B_Cancelar.Click += B_Cancelar_Click;
+            // 
+            // TB_NombreCategoria
+            // 
+            TB_NombreCategoria.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            TB_NombreCategoria.BackColor = Color.WhiteSmoke;
+            TB_NombreCategoria.Font = new Font("Segoe UI", 13.8F);
+            TB_NombreCategoria.ForeColor = Color.FromArgb(26, 77, 128);
+            TB_NombreCategoria.Location = new Point(28, 188);
+            TB_NombreCategoria.Name = "TB_NombreCategoria";
+            TB_NombreCategoria.Size = new Size(666, 38);
+            TB_NombreCategoria.TabIndex = 2;
+            TB_NombreCategoria.TextAlign = HorizontalAlignment.Center;
+            TB_NombreCategoria.KeyDown += TB_NombreCategoria_KeyDown;
+            // 
+            // V_ModificarCategoriaInventario
+            // 
+            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(706, 364);
+            Controls.Add(panel2);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Name = "V_ModificarCategoriaInventario";
+            Text = "Modificar Categoria Inventario";
+            panel2.ResumeLayout(false);
+            panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
+            ResumeLayout(false);
+        }
+
+        #endregion
+        private Label label1;
+        private Panel panel2;
+        private Button B_Guardar;
+        private Label label7;
+        private TextBox TB_Estante;
+        private Button B_Cancelar;
+        private TextBox TB_NombreCategoria;
+        private Panel panel1;
+        private PictureBox pictureBox2;
+    }
+}

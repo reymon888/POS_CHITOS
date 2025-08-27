@@ -1,4 +1,5 @@
-﻿using System;
+﻿using POS_CHITOS.PI;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -24,5 +25,11 @@ namespace POS_CHITOS
 
         [Column("direccion")]
         public string DireccionProveedor { get; set; }
+
+        [Column("Estado")]
+        public string Estado { get; set; } 
+
+        // Relación
+        public virtual ICollection<ProveedoresInventario> ProveedoresInventario { get; set; }
     }
 }

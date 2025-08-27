@@ -20,12 +20,24 @@ namespace POS_CHITOS
             _idEntrada = idEntrada;
             _entradaEfectivoService = entradaEfectivoService;
 
+
+
             //Asignar los valores a los controles
             TB_Concepto.Text = concepto;
             TB_Monto.Text = monto.ToString();
+
+            //Centrar el formulario
+            StartPosition = FormStartPosition.CenterScreen;
+
+            //No se puede cambiar el tamaño de la ventana
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
         }
 
-        private void B_ModificarEntrada_Click(object sender, EventArgs e)
+
+
+        private void ModificarEntrada()
         {
             //Obtener los valores modificados del formulario
             string nuevoConcepto = TB_Concepto.Text;
@@ -40,6 +52,21 @@ namespace POS_CHITOS
             else
             {
                 MessageBox.Show("Por favor, ingrese un monto válido.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void B_Guardar_Click(object sender, EventArgs e)
+        {
+            ModificarEntrada();
+        }
+
+        private void B_Cancelar_Click(object sender, EventArgs e)
+        {
+            //Preguntar al usuario si desea cancelar la modificación
+            var respuesta = MessageBox.Show("¿Está seguro que desea cancelar la modificación de la entrada de efectivo?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (respuesta == DialogResult.Yes)
+            {
+                this.Close(); //Cerrar la ventana
             }
         }
     }

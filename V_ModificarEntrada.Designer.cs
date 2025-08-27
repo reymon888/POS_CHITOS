@@ -28,179 +28,181 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(V_ModificarEntrada));
             panel2 = new Panel();
             B_Cancelar = new Button();
-            B_ModificarEntrada = new Button();
+            B_Guardar = new Button();
+            pictureBox2 = new PictureBox();
+            panel1 = new Panel();
+            label1 = new Label();
             TB_Monto = new TextBox();
             TB_Concepto = new TextBox();
             label5 = new Label();
             label3 = new Label();
-            panel1 = new Panel();
-            textBox5 = new TextBox();
-            label1 = new Label();
-            pictureBox1 = new PictureBox();
             panel2.SuspendLayout();
-            panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             SuspendLayout();
             // 
             // panel2
             // 
-            panel2.BackColor = SystemColors.ButtonHighlight;
+            panel2.BackColor = Color.WhiteSmoke;
             panel2.Controls.Add(B_Cancelar);
-            panel2.Controls.Add(B_ModificarEntrada);
+            panel2.Controls.Add(B_Guardar);
+            panel2.Controls.Add(pictureBox2);
+            panel2.Controls.Add(panel1);
+            panel2.Controls.Add(label1);
             panel2.Controls.Add(TB_Monto);
             panel2.Controls.Add(TB_Concepto);
             panel2.Controls.Add(label5);
             panel2.Controls.Add(label3);
             panel2.Dock = DockStyle.Fill;
-            panel2.Location = new Point(323, 0);
+            panel2.Location = new Point(0, 0);
+            panel2.Margin = new Padding(3, 2, 3, 2);
             panel2.Name = "panel2";
-            panel2.Size = new Size(496, 346);
+            panel2.Size = new Size(712, 346);
             panel2.TabIndex = 7;
             // 
             // B_Cancelar
             // 
             B_Cancelar.AutoSize = true;
-            B_Cancelar.BackColor = Color.FromArgb(255, 192, 192);
-            B_Cancelar.Font = new Font("Arial", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            B_Cancelar.Image = Properties.Resources.boton_x;
-            B_Cancelar.Location = new Point(266, 239);
+            B_Cancelar.BackColor = Color.Silver;
+            B_Cancelar.Font = new Font("Segoe UI Semibold", 13.8F, FontStyle.Bold);
+            B_Cancelar.Image = Properties.Resources.cerrar;
+            B_Cancelar.Location = new Point(358, 260);
+            B_Cancelar.Margin = new Padding(3, 2, 3, 2);
             B_Cancelar.Name = "B_Cancelar";
-            B_Cancelar.Size = new Size(152, 70);
-            B_Cancelar.TabIndex = 6;
-            B_Cancelar.Text = "Cancelar (F1)";
-            B_Cancelar.TextImageRelation = TextImageRelation.ImageAboveText;
+            B_Cancelar.Size = new Size(192, 55);
+            B_Cancelar.TabIndex = 48;
+            B_Cancelar.Text = "Cancelar (Esc)";
+            B_Cancelar.TextAlign = ContentAlignment.MiddleRight;
+            B_Cancelar.TextImageRelation = TextImageRelation.ImageBeforeText;
             B_Cancelar.UseVisualStyleBackColor = false;
+            B_Cancelar.Click += B_Cancelar_Click;
             // 
-            // B_ModificarEntrada
+            // B_Guardar
             // 
-            B_ModificarEntrada.AutoSize = true;
-            B_ModificarEntrada.BackColor = Color.FromArgb(192, 255, 192);
-            B_ModificarEntrada.Font = new Font("Arial", 10.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            B_ModificarEntrada.Image = Properties.Resources.aceptar__1_;
-            B_ModificarEntrada.Location = new Point(76, 239);
-            B_ModificarEntrada.Name = "B_ModificarEntrada";
-            B_ModificarEntrada.Size = new Size(152, 70);
-            B_ModificarEntrada.TabIndex = 5;
-            B_ModificarEntrada.Text = "Aceptar (Enter)";
-            B_ModificarEntrada.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_ModificarEntrada.UseVisualStyleBackColor = false;
-            B_ModificarEntrada.Click += B_ModificarEntrada_Click;
+            B_Guardar.AutoSize = true;
+            B_Guardar.BackColor = Color.FromArgb(26, 77, 128);
+            B_Guardar.Font = new Font("Segoe UI Semibold", 13.8F, FontStyle.Bold);
+            B_Guardar.ForeColor = Color.White;
+            B_Guardar.Image = Properties.Resources.salvar1;
+            B_Guardar.Location = new Point(139, 260);
+            B_Guardar.Margin = new Padding(3, 2, 3, 2);
+            B_Guardar.Name = "B_Guardar";
+            B_Guardar.Size = new Size(203, 55);
+            B_Guardar.TabIndex = 47;
+            B_Guardar.Text = "Aceptar (Enter)";
+            B_Guardar.TextAlign = ContentAlignment.MiddleRight;
+            B_Guardar.TextImageRelation = TextImageRelation.ImageBeforeText;
+            B_Guardar.UseVisualStyleBackColor = false;
+            B_Guardar.Click += B_Guardar_Click;
+            // 
+            // pictureBox2
+            // 
+            pictureBox2.Image = Properties.Resources.dinero;
+            pictureBox2.Location = new Point(172, 8);
+            pictureBox2.Margin = new Padding(3, 2, 3, 2);
+            pictureBox2.Name = "pictureBox2";
+            pictureBox2.Size = new Size(64, 64);
+            pictureBox2.SizeMode = PictureBoxSizeMode.AutoSize;
+            pictureBox2.TabIndex = 46;
+            pictureBox2.TabStop = false;
+            // 
+            // panel1
+            // 
+            panel1.BackColor = Color.FromArgb(26, 77, 128);
+            panel1.Location = new Point(98, 85);
+            panel1.Margin = new Padding(3, 2, 3, 2);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(508, 3);
+            panel1.TabIndex = 40;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI Semibold", 19.8000011F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.ForeColor = Color.Black;
+            label1.Location = new Point(234, 20);
+            label1.Name = "label1";
+            label1.Size = new Size(231, 37);
+            label1.TabIndex = 41;
+            label1.Text = "Datos del Ingreso";
             // 
             // TB_Monto
             // 
             TB_Monto.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            TB_Monto.Font = new Font("Arial Rounded MT Bold", 16.2F);
-            TB_Monto.Location = new Point(64, 163);
+            TB_Monto.BackColor = Color.WhiteSmoke;
+            TB_Monto.Font = new Font("Segoe UI", 13.8F);
+            TB_Monto.ForeColor = Color.FromArgb(26, 77, 128);
+            TB_Monto.Location = new Point(187, 193);
+            TB_Monto.Margin = new Padding(3, 2, 3, 2);
             TB_Monto.Name = "TB_Monto";
-            TB_Monto.Size = new Size(354, 39);
-            TB_Monto.TabIndex = 4;
+            TB_Monto.Size = new Size(312, 32);
+            TB_Monto.TabIndex = 45;
+            TB_Monto.TextAlign = HorizontalAlignment.Center;
             // 
             // TB_Concepto
             // 
             TB_Concepto.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            TB_Concepto.Font = new Font("Arial Rounded MT Bold", 16.2F);
-            TB_Concepto.Location = new Point(47, 66);
+            TB_Concepto.BackColor = Color.WhiteSmoke;
+            TB_Concepto.Font = new Font("Segoe UI", 13.8F);
+            TB_Concepto.ForeColor = Color.FromArgb(26, 77, 128);
+            TB_Concepto.Location = new Point(98, 129);
+            TB_Concepto.Margin = new Padding(3, 2, 3, 2);
             TB_Concepto.Name = "TB_Concepto";
-            TB_Concepto.Size = new Size(415, 39);
-            TB_Concepto.TabIndex = 2;
+            TB_Concepto.Size = new Size(509, 32);
+            TB_Concepto.TabIndex = 44;
+            TB_Concepto.TextAlign = HorizontalAlignment.Center;
             // 
             // label5
             // 
             label5.AutoSize = true;
-            label5.Font = new Font("Arial Rounded MT Bold", 16.2F);
-            label5.Location = new Point(190, 128);
+            label5.Font = new Font("Segoe UI Semibold", 13.8F, FontStyle.Bold);
+            label5.Location = new Point(298, 167);
             label5.Name = "label5";
-            label5.Size = new Size(110, 32);
-            label5.TabIndex = 5;
+            label5.Size = new Size(78, 25);
+            label5.TabIndex = 42;
             label5.Text = "Monto*";
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Font = new Font("Arial Rounded MT Bold", 16.2F);
-            label3.Location = new Point(162, 31);
+            label3.Font = new Font("Segoe UI Semibold", 13.8F, FontStyle.Bold);
+            label3.Location = new Point(285, 90);
             label3.Name = "label3";
-            label3.Size = new Size(160, 32);
-            label3.TabIndex = 3;
+            label3.Size = new Size(102, 25);
+            label3.TabIndex = 43;
             label3.Text = "Concepto*";
-            // 
-            // panel1
-            // 
-            panel1.BackColor = SystemColors.ButtonHighlight;
-            panel1.BorderStyle = BorderStyle.Fixed3D;
-            panel1.Controls.Add(textBox5);
-            panel1.Controls.Add(label1);
-            panel1.Controls.Add(pictureBox1);
-            panel1.Dock = DockStyle.Left;
-            panel1.Location = new Point(0, 0);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(323, 346);
-            panel1.TabIndex = 6;
-            // 
-            // textBox5
-            // 
-            textBox5.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            textBox5.BorderStyle = BorderStyle.None;
-            textBox5.Enabled = false;
-            textBox5.Font = new Font("Arial", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            textBox5.Location = new Point(28, 264);
-            textBox5.Multiline = true;
-            textBox5.Name = "textBox5";
-            textBox5.Size = new Size(250, 61);
-            textBox5.TabIndex = 10;
-            textBox5.Text = "* Llena los campos para modificar la entrada de efectivo correctamente *";
-            textBox5.TextAlign = HorizontalAlignment.Center;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Arial Rounded MT Bold", 13.8F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(10, 49);
-            label1.Name = "label1";
-            label1.Size = new Size(309, 27);
-            label1.TabIndex = 1;
-            label1.Text = "Modificar Entrada Efectivo";
-            // 
-            // pictureBox1
-            // 
-            pictureBox1.Image = Properties.Resources.proveedor__2_;
-            pictureBox1.Location = new Point(88, 103);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(128, 134);
-            pictureBox1.TabIndex = 0;
-            pictureBox1.TabStop = false;
             // 
             // V_ModificarEntrada
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AcceptButton = B_Guardar;
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(819, 346);
+            CancelButton = B_Cancelar;
+            ClientSize = new Size(712, 346);
             Controls.Add(panel2);
-            Controls.Add(panel1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(3, 2, 3, 2);
             Name = "V_ModificarEntrada";
             Text = "Modificar Entrada Efectivo";
             panel2.ResumeLayout(false);
             panel2.PerformLayout();
-            panel1.ResumeLayout(false);
-            panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
 
         private Panel panel2;
-        private Button B_Cancelar;
-        private Button B_ModificarEntrada;
+        private PictureBox pictureBox2;
+        private Panel panel1;
+        private Label label1;
         private TextBox TB_Monto;
         private TextBox TB_Concepto;
         private Label label5;
         private Label label3;
-        private Panel panel1;
-        private TextBox textBox5;
-        private Label label1;
-        private PictureBox pictureBox1;
+        private Button B_Cancelar;
+        private Button B_Guardar;
     }
 }

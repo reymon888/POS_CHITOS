@@ -17,14 +17,15 @@ namespace POS_CHITOS
         }
 
         //Crear proveedor 
-        public void crearProveedor(String nombreProveedor, String telefonoProveedor, String correoElectronico, String direccionProveedor)
+        public void crearProveedor(string nombreProveedor, string telefonoProveedor, string correoElectronico, string direccionProveedor)
         {
             var nuevoProveedor = new Proveedores
             {
                 NombreProveedor = nombreProveedor,
-                TelefonoProveedor= telefonoProveedor,
+                TelefonoProveedor = telefonoProveedor,
                 CorreoElectronico = correoElectronico,
-                DireccionProveedor = direccionProveedor
+                DireccionProveedor = direccionProveedor,
+                Estado = "Activo"
             };
 
             _context.Proveedores.Add(nuevoProveedor);
@@ -71,6 +72,25 @@ namespace POS_CHITOS
             }
         }
 
+        //metodo de cambiar estado del proveedor de Activo a Inactivo y viceversa
+        public void cambiarEstadoProveedor(int idProveedor)
+        {
+            var proveedor = _context.Proveedores.Find(idProveedor);
+            if (proveedor != null)
+            {
+                if (proveedor.Estado == "Activo")
+                {
+                    proveedor.Estado = "Inactivo";
+                }
+                else
+                {
+                    proveedor.Estado = "Activo";
+                }
+                _context.Proveedores.Update(proveedor);
+                _context.SaveChanges();
+            }
+        }
+
         //listar proveedores
         public List<Proveedores> listarProveedores()
         {
@@ -83,7 +103,7 @@ namespace POS_CHITOS
             return _context.Proveedores.Where(p => p.NombreProveedor.Contains(nombreProveedor)).ToList();
         }
 
-       
+
 
         //metodo de obtener proveedor por nombre
         public Proveedores ObtenerProveedorPorNombre(string nombreProveedor)

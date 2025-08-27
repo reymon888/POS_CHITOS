@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+//using POS_CHITOS.Proveedores;
+using POS_CHITOS;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,11 +20,19 @@ namespace POS_CHITOS
         public V_UpdateProveedor(int idProveedor, ProveedoresService proveedoresService)
         {
             InitializeComponent();
-            
-            
+
+
             _proveedoresService = proveedoresService;
             _idProveedor = idProveedor;
             TB_NombreProveedor.Focus();
+            //aparecer en el centro
+            StartPosition = FormStartPosition.CenterScreen;
+
+            //no se puede cambiar el tamaño de la ventana
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+
 
             CargarDatosProveedor();
         }
@@ -48,16 +58,25 @@ namespace POS_CHITOS
 
         private void B_CrearProveedor_Click(object sender, EventArgs e)
         {
-            if (TB_NombreProveedor.Text != "" && TB_TelefonoProveedor.Text != "" && TB_DireccionProveedor.Text != "")
+            //Si escribio en la caja de correo, validar que sea un correo
+            if (TB_NombreProveedor.Text == "" || TB_TelefonoProveedor.Text == "" || TB_CEProveedor.Text == "" || TB_DireccionProveedor.Text == "")
             {
-                _proveedoresService.modificarProveedor(_idProveedor, TB_NombreProveedor.Text, TB_TelefonoProveedor.Text, TB_CEProveedor.Text, TB_DireccionProveedor.Text);
-                MessageBox.Show("Proveedor modificado exitosamente");
-                this.DialogResult = DialogResult.OK;
-                this.Close();  // Asegúrate de que el formulario se cierra después de guardar los cambios
+                MessageBox.Show("Por favor llene todos los campos");
             }
             else
             {
-                MessageBox.Show("Por favor llene todos los campos");
+                //Validar que el correo electronico sea un correo electronico
+                if (TB_CEProveedor.Text.Contains("@") && TB_CEProveedor.Text.Contains(".com"))
+                {
+                    //Modificar el proveedor
+                    _proveedoresService.modificarProveedor(_idProveedor, TB_NombreProveedor.Text, TB_TelefonoProveedor.Text, TB_CEProveedor.Text, TB_DireccionProveedor.Text);
+                    MessageBox.Show("Proveedor modificado exitosamente");
+                    this.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Correo electrónico inválido", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
 
@@ -76,6 +95,47 @@ namespace POS_CHITOS
             {
                 MessageBox.Show("No se encontró el proveedor.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 this.Close();
+            }
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void TB_NombreProveedor_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //Permitir solo 100 caracteres
+            if (TB_NombreProveedor.Text.Length == 100)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void TB_TelefonoProveedor_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //Permitir solo 10 caracteres y puro numero
+            if (TB_TelefonoProveedor.Text.Length == 10 || !char.IsDigit(e.KeyChar))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void TB_CEProveedor_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //Permitir 50 caracteres 
+            if (TB_CEProveedor.Text.Length == 50)
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void TB_DireccionProveedor_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            //Permitir 100 caracteres
+            if (TB_DireccionProveedor.Text.Length == 100)
+            {
+                e.Handled = true;
             }
         }
     }

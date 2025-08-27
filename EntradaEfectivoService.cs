@@ -36,8 +36,49 @@ namespace POS_CHITOS
         // Obtener todas las entradas de efectivo
         public List<EntradaEfectivo> ListarEntradas()
         {
-            return _context.entradaEfectivo.Include(e => e.Usuario)
-                   .ToList();
+            //lISTAR LAS ENTRADAS PERO SOLO DEL DIA ACTUAL Y EN ORDEN DESCENDENTE
+            return _context.entradaEfectivo.Where(e => e.Fecha.Date == DateTime.Now.Date).OrderByDescending(e => e.Fecha).ToList();
+        }
+
+        //Listar entradas por usuario y fecha actual en order descendiente, si el usuario es superadministraro, listar todas las entradas 
+        public List<EntradaEfectivoDTO> ListarEntradasPorUsuario(int idUsuario)
+        {
+            var usuario = _context.Usuarios.Find(idUsuario);
+
+            if (usuario.Rol == "Superadministrador")
+            {
+                return _context.entradaEfectivo
+                    .Include(e => e.Usuario) // Incluye la relación con Usuario
+                    .Where(e => e.Fecha.Date == DateTime.Now.Date)
+                    .OrderByDescending(e => e.Fecha)
+                    .Select(e => new EntradaEfectivoDTO
+                    {
+                        idEntrada = e.idEntrada,
+                        Fecha = e.Fecha,
+                        Concepto = e.Concepto,
+                        Monto = e.Monto,
+                        NombreUsuario = e.Usuario.NombreUsuario, // Proyecta el nombre del usuario
+                        Estado = e.Estado
+                    })
+                    .ToList();
+            }
+            else
+            {
+                return _context.entradaEfectivo
+                    .Include(e => e.Usuario) // Incluye la relación con Usuario
+                    .Where(e => e.idUsuario == idUsuario && e.Fecha.Date == DateTime.Now.Date)
+                    .OrderByDescending(e => e.Fecha)
+                    .Select(e => new EntradaEfectivoDTO
+                    {
+                        idEntrada = e.idEntrada,
+                        Fecha = e.Fecha,
+                        Concepto = e.Concepto,
+                        Monto = e.Monto,
+                        NombreUsuario = e.Usuario.NombreUsuario, // Proyecta el nombre del usuario
+                        Estado = e.Estado
+                    })
+                    .ToList();
+            }
         }
 
 
@@ -92,5 +133,33 @@ namespace POS_CHITOS
                 _context.SaveChanges();
             }
         }
+
+        public List<EntradaEfectivoDTO> ObtenerIngresosPorFecha(DateTime desde, DateTime hasta)
+        {
+            return _context.entradaEfectivo
+                .Where(e => e.Fecha >= desde && e.Fecha <= hasta)
+                .Select(e => new EntradaEfectivoDTO
+                {
+                    Fecha = e.Fecha,
+                    NombreUsuario = e.Usuario.NombreUsuario,
+                    Monto = e.Monto,
+                    Concepto = e.Concepto // Incluimos la descripción del ingreso
+                }).ToList();
+        }
+
+        public List<EntradaEfectivoDTO> ObtenerIngresosPorUsuarioYFecha(int idUsuario, DateTime desde, DateTime hasta)
+        {
+            return _context.entradaEfectivo
+                .Where(e => e.Fecha >= desde && e.Fecha <= hasta && e.idUsuario == idUsuario)
+                .Select(e => new EntradaEfectivoDTO
+                {
+                    Fecha = e.Fecha,
+                    NombreUsuario = e.Usuario.NombreUsuario,
+                    Monto = e.Monto,
+                    Concepto = e.Concepto // Incluimos la descripción del ingreso
+                }).ToList();
+        }
+
     }
+
 }

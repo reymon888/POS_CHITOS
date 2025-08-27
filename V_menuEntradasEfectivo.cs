@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using POS_CHITOS.Usuarios;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,11 +16,14 @@ namespace POS_CHITOS
     {
         private readonly int _idUsuario;
 
+
         private readonly EntradaEfectivoService _entradaEfectivoService;
         private readonly DbContext _context;
+        private Usuario _usuarioActual;  // Usuario actual
         public V_menuEntradasEfectivo(int idUsuario, DbContext context)
         {
             InitializeComponent();
+            _usuarioActual = context.Set<Usuario>().Find(idUsuario);
             _idUsuario = idUsuario;
 
             POSContext contexto = new POSContext(new DbContextOptions<POSContext>());
@@ -30,6 +34,20 @@ namespace POS_CHITOS
             CargarEntradasEfectivo();
             ConfigurarEstiloTabla();
 
+            // Configurar los permisos de acuerdo al rol del usuario
+            ConfigurarPermisos();
+
+        }
+
+        private void ConfigurarPermisos()
+        {
+            if (_usuarioActual.Rol == "Cajero")
+            {
+                // Deshabilitar los botones de modificar y cancelar ventas para el Cajero normal
+                B_ModificarEntrada.Enabled = false;
+                B_CambiarEstado.Enabled = false;
+            }
+           
         }
 
         private void ConfigurarEstiloTabla()
@@ -56,17 +74,8 @@ namespace POS_CHITOS
 
         private void CargarEntradasEfectivo()
         {
-            // Obtener las entradas de efectivo desde el servicio
-            var entradas = _entradaEfectivoService.ListarEntradas()
-                .Select(e => new
-                {
-                    e.idEntrada,
-                    e.Fecha,
-                    e.Concepto,
-                    e.Monto,
-                    Usuario = e.Usuario.NombreUsuario, // Asumiendo que tienes una relación con la tabla usuarios
-                    e.Estado
-                }).ToList();
+            // Obtener todas las entradas de efectivo desde el servicio
+            var entradas = _entradaEfectivoService.ListarEntradasPorUsuario(_idUsuario);
 
             // Limpiar el DataSource antes de volver a asignar
             DGV_EntradasEfectivo.DataSource = null;
@@ -117,9 +126,9 @@ namespace POS_CHITOS
             // Columna de Usuario
             DGV_EntradasEfectivo.Columns.Add(new DataGridViewTextBoxColumn
             {
-                Name = "Usuario",
+                Name = "NombreUsuario",
                 HeaderText = "Usuario",
-                DataPropertyName = "Usuario", // Debe coincidir con la propiedad del DTO
+                DataPropertyName = "NombreUsuario", // Debe coincidir con la propiedad del DTO
                 Width = 200
             });
 
@@ -138,6 +147,7 @@ namespace POS_CHITOS
             // Aplicar el estilo personalizado
             ConfigurarEstiloTabla();
         }
+
 
 
         private void B_AgregarEntrada_Click(object sender, EventArgs e)
@@ -211,6 +221,37 @@ namespace POS_CHITOS
             //Recargar las entradas de efectivo
             CargarEntradasEfectivo();
 
+        }
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.Control | Keys.N))
+            {
+                B_AgregarEntrada.PerformClick();
+                return true;
+            }
+            if (keyData == (Keys.Control | Keys.M))
+            {
+                B_ModificarEntrada.PerformClick();
+                return true;
+            }
+            if (keyData == (Keys.Control | Keys.B))
+            {
+                B_CambiarEstado.PerformClick();
+                return true;
+            }
+
+            if (keyData == (Keys.Control | Keys.R))
+            {
+                B_ActualizarTabla.PerformClick();
+                return true;
+            }
+         
+            if (keyData == (Keys.Control | Keys.T))
+            {
+                DGV_EntradasEfectivo.Focus();
+                return true;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
         }
     }
 }

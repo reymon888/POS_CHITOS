@@ -1,3 +1,5 @@
+using POS_CHITOS.Usuarios;
+
 namespace POS_CHITOS
 {
     internal static class Program
