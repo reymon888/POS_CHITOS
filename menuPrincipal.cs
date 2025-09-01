@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using POS_CHITOS.Clientes;
 using POS_CHITOS.Reportes;
 using POS_CHITOS.Usuarios;
 using System.Diagnostics;
@@ -28,6 +29,7 @@ namespace POS_CHITOS
 
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.menuPrincipal_KeyDown);
 
+            this.KeyPreview = true; // garantiza que ProcessCmdKey siempre reciba las teclas
 
 
 
@@ -85,36 +87,32 @@ namespace POS_CHITOS
 
         private void button4_Click(object sender, EventArgs e)
         {
-            // Crear una nueva instancia de POSContext
-            var context = new POSContext(new DbContextOptions<POSContext>());
-            openChildForm(new V_menuProveedor(_usuarioActual.Id, context));
-
-
+           openChildForm(new V_menuProveedor(_usuarioActual.Id, CreateContext()));
 
         }
 
         private void openChildForm(Form childForm)
         {
-            // Cierra el formulario activo si existe
+            // Cierra y libera el hijo anterior si existe
             if (activeForm != null)
             {
+                panelEscritorio.Controls.Remove(activeForm);
                 activeForm.Close();
+                activeForm.Dispose();     // <- clave
+                activeForm = null;
             }
 
-            // Configuración del nuevo formulario hijo
             activeForm = childForm;
             childForm.TopLevel = false;
             childForm.FormBorderStyle = FormBorderStyle.None;
             childForm.Dock = DockStyle.Fill;
 
-            // Agregar el formulario hijo al panel
+            panelEscritorio.SuspendLayout();
             panelEscritorio.Controls.Add(childForm);
             panelEscritorio.Tag = childForm;
-
-            // Mostrar y establecer el foco en el formulario hijo
-            childForm.BringToFront();
             childForm.Show();
-            childForm.Focus(); // Asegura que el foco esté en el formulario hijo
+            childForm.BringToFront();
+            panelEscritorio.ResumeLayout();
         }
 
 
@@ -125,20 +123,15 @@ namespace POS_CHITOS
 
         private void B_Inventario_Click(object sender, EventArgs e)
         {
-            // Crear una nueva instancia de POSContext
-            var context = new POSContext(new DbContextOptions<POSContext>());
-
             // Pasar el contexto al crear el formulario
-            openChildForm(new V_menuInventario(_usuarioActual.Id, context));
+            openChildForm(new V_menuInventario(_usuarioActual.Id, CreateContext()));
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            // Crear una nueva instancia de POSContext
-            var context = new POSContext(new DbContextOptions<POSContext>());
-
+            
             // Pasar el contexto al crear el formulario
-            openChildForm(new V_menuUsuarios(context));
+            openChildForm(new V_menuUsuarios(CreateContext()));
         }
 
         private void B_reportes_Click(object sender, EventArgs e)
@@ -158,66 +151,62 @@ namespace POS_CHITOS
 
         private void B_Usuarios_Click(object sender, EventArgs e)
         {
-            // Crear una nueva instancia de POSContext
-            var context = new POSContext(new DbContextOptions<POSContext>());
-
-            // Pasar el contexto al crear el formulario
-            openChildForm(new V_menuUsuarios(context));
+             // Pasar el contexto al crear el formulario
+            openChildForm(new V_menuUsuarios(CreateContext()));
         }
 
         private void B_NuevaCompra_Click(object sender, EventArgs e)
         {
-            // Crear una nueva instancia de POSContext
-            var context = new POSContext(new DbContextOptions<POSContext>());
-
-            // Crear una nueva instancia de V_CreateCompra y pasar el ID del usuario actual
+           // Crear una nueva instancia de V_CreateCompra y pasar el ID del usuario actual
             openChildForm(new V_CreateCompra(_usuarioActual.Id));  // Asume que _usuarioActual tiene el ID del usuario
         }
 
         private void B_Compras_Click(object sender, EventArgs e)
         {
-            // Crear una nueva instancia de POSContext
-            var context = new POSContext(new DbContextOptions<POSContext>());
-
+            
             // Pasar el contexto al crear el formulario
-            openChildForm(new V_MenuCompras(_usuarioActual.Id, context));
+            openChildForm(new V_MenuCompras(_usuarioActual.Id, CreateContext()));
         }
 
         private void B_NuevaVenta_Click(object sender, EventArgs e)
         {
-            var context = new POSContext(new DbContextOptions<POSContext>());
+           
             openChildForm(new V_CreateVenta(_usuarioActual.Id));
         }
 
         private void B_Ventas_Click(object sender, EventArgs e)
         {
-            var context = new POSContext(new DbContextOptions<POSContext>());
-            openChildForm(new V_MenuVentas(_usuarioActual.Id, context));
+            
+            openChildForm(new V_MenuVentas(_usuarioActual.Id, CreateContext()));
         }
 
         private void B_caja_Click(object sender, EventArgs e)
         {
-            var context = new POSContext(new DbContextOptions<POSContext>());
-            openChildForm(new V_menuEntradasEfectivo(_usuarioActual.Id, context));
+           
+            openChildForm(new V_menuEntradasEfectivo(_usuarioActual.Id, CreateContext()));
         }
 
         private void B_Cortes_Click(object sender, EventArgs e)
         {
-            var context = new POSContext(new DbContextOptions<POSContext>());
+           
 
             // Pasamos el usuario actual y el contexto al menú de cortes
-            openChildForm(new V_MenuCortesCaja(_usuarioActual.Id, context));
+            openChildForm(new V_MenuCortesCaja(_usuarioActual.Id, CreateContext()));
         }
 
         private void B_Gastos_Click(object sender, EventArgs e)
         {
-            var context = new POSContext(new DbContextOptions<POSContext>());
-            openChildForm(new V_MenuSalidasEfectivo(_usuarioActual.Id, context));
+           
+            openChildForm(new V_MenuSalidasEfectivo(_usuarioActual.Id, CreateContext()));
         }
 
         private void B_Salir_Click(object sender, EventArgs e)
         {
-            this.Close();
+            // logout: volver a login sin petatear la app
+            var login = new V_LogIn();
+            login.FormClosed += (_, __) => this.Close(); // cuando se cierre login, ya cerramos todo
+            this.Hide();
+            login.Show();
         }
         // Cambiar color de los botones del panel lateral
         // Cambiar color de los botones
@@ -252,59 +241,60 @@ namespace POS_CHITOS
                 B_Usuarios.Visible = false;
                 B_Reportes.Visible = false;
             }
-          
+
         }
 
         private void menuPrincipal_KeyDown(object sender, KeyEventArgs e)
         {
-           
 
 
+
+        }
+
+        // Helper reutilizable en tu formulario
+        private static bool TryClick(Button b)
+        {
+            if (b != null && b.Visible && b.Enabled)
+            {
+                b.PerformClick();
+                return true;
+            }
+            return false;
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             switch (keyData)
             {
-                case Keys.F1:
-                    B_NuevaVenta.PerformClick();
-                    return true;
-                case Keys.F2:
-                    B_Inventario.PerformClick();
-                    return true;
-                case Keys.F3:
-                    B_Entradas.PerformClick();
-                    return true;
-                case Keys.F4:
-                    B_NuevaCompra.PerformClick();
-                    return true;
-                case Keys.F5:
-                    B_Proveedores.PerformClick();
-                    return true;
-                case Keys.F6:
-                    B_Usuarios.PerformClick();
-                    return true;
-                case Keys.F7:
-                    B_Gastos.PerformClick();
-                    return true;
-                case Keys.F8:
-                    B_Compras.PerformClick();
-                    return true;
-                case Keys.F9:
-                    B_Reportes.PerformClick();
-                    return true;
-                case Keys.F10:
-                    B_Ventas.PerformClick();
-                    return true;
-                case Keys.F11:
-                    B_Cortes.PerformClick();
-                    return true;
-                case Keys.F12:
-                    B_Salir.PerformClick();
-                    return true;
+                case Keys.F1: return TryClick(B_NuevaVenta) || base.ProcessCmdKey(ref msg, keyData);
+                case Keys.F2: return TryClick(B_Inventario) || base.ProcessCmdKey(ref msg, keyData);
+                case Keys.F3: return TryClick(B_Entradas) || base.ProcessCmdKey(ref msg, keyData);
+                case Keys.F4: return TryClick(B_NuevaCompra) || base.ProcessCmdKey(ref msg, keyData);
+                case Keys.F5: return TryClick(B_Proveedores) || base.ProcessCmdKey(ref msg, keyData);
+                case Keys.F6: return TryClick(B_Usuarios) || base.ProcessCmdKey(ref msg, keyData);
+                case Keys.F7: return TryClick(B_Gastos) || base.ProcessCmdKey(ref msg, keyData);
+                case Keys.F8: return TryClick(B_Compras) || base.ProcessCmdKey(ref msg, keyData);
+                case Keys.F9: return TryClick(B_Reportes) || base.ProcessCmdKey(ref msg, keyData);
+                case Keys.F10: return TryClick(B_Ventas) || base.ProcessCmdKey(ref msg, keyData);
+                case Keys.F11: return TryClick(B_Cortes) || base.ProcessCmdKey(ref msg, keyData);
+                case Keys.F12: return TryClick(B_Salir) || base.ProcessCmdKey(ref msg, keyData);
+                case Keys.Control | Keys.L: return TryClick(B_Clientes) || base.ProcessCmdKey(ref msg, keyData);
                 default:
                     return base.ProcessCmdKey(ref msg, keyData);
             }
+        }
+
+
+        private void B_Clientes_Click(object sender, EventArgs e)
+        {
+            openChildForm(new V_MenuClientes(CreateContext()));
+        }
+
+        private static POSContext CreateContext()
+        {
+            // hoy no cambia nada; si mañana ajustas cadena de conexión o logging,
+            // lo haces aquí y el resto del código ni se entera.
+            return new POSContext(new DbContextOptions<POSContext>());
         }
 
     }
