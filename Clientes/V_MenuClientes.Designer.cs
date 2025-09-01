@@ -62,6 +62,7 @@
             DGV_Clientes.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             DGV_Clientes.Size = new Size(1831, 753);
             DGV_Clientes.TabIndex = 4;
+            DGV_Clientes.CellDoubleClick += DGV_Clientes_CellDoubleClick;
             // 
             // panelSuperiorProv
             // 
@@ -164,6 +165,7 @@
             B_Agregar.Text = "Agregar (Ctrl + N)";
             B_Agregar.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Agregar.UseVisualStyleBackColor = false;
+            B_Agregar.Click += B_Agregar_Click;
             // 
             // B_Modificar
             // 
@@ -183,6 +185,7 @@
             B_Modificar.Text = "Modificar (Ctrl + M)";
             B_Modificar.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Modificar.UseVisualStyleBackColor = false;
+            B_Modificar.Click += B_Modificar_Click;
             // 
             // B_Estado
             // 
@@ -202,7 +205,7 @@
             B_Estado.Text = "Cambiar Estado (Ctrl + B)";
             B_Estado.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Estado.UseVisualStyleBackColor = false;
-            B_Estado.Click += B_Estado_Click;
+            B_Estado.Click += B_Estado_ClickAsync;
             // 
             // TB_BuscarCliente
             // 

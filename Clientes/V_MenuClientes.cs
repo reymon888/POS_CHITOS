@@ -7,11 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using POS_CHITOS.Utils;
 
 namespace POS_CHITOS.Clientes
 {
     public partial class V_MenuClientes : Form
     {
+        private readonly POSContext _ctx;
         private readonly clientesService _svc;
         private readonly BindingSource _bs = new();
         private readonly List<ClientesDTO> _cache = new();
@@ -22,7 +24,8 @@ namespace POS_CHITOS.Clientes
         {
             InitializeComponent();
             ConfigurarGrid();
-            _svc = new clientesService(ctx);
+            _ctx = ctx;
+            _svc = new clientesService(_ctx);
 
             DGV_Clientes.DataSource = _bs;
 
@@ -48,44 +51,62 @@ namespace POS_CHITOS.Clientes
             DGV_Clientes.RowHeadersVisible = false;
             DGV_Clientes.AllowUserToAddRows = false;
             DGV_Clientes.AllowUserToResizeRows = false;
+            DGV_Clientes.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            DGV_Clientes.AllowUserToResizeColumns = true;
+
+
 
             DGV_Clientes.Columns.Clear();
+
+            // --- Columnas ---
             DGV_Clientes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Nombre",
                 HeaderText = "Nombre",
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                FillWeight = 24,                   // antes estaba gigantesca; bajamos
+                MinimumWidth = 180
             });
             DGV_Clientes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Telefono",
                 HeaderText = "Teléfono",
-                Width = 120
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                FillWeight = 15
             });
             DGV_Clientes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "RFC",
                 HeaderText = "RFC",
-                Width = 110
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                FillWeight = 15
+            });
+            DGV_Clientes.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "Email",
+                HeaderText = "Email",
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                FillWeight = 22
             });
             DGV_Clientes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Direccion",
                 HeaderText = "Dirección",
-                Width = 220
+                FillWeight = 28,                    // le damos más espacio 👈
+                MinimumWidth = 220,
+                DefaultCellStyle = { WrapMode = DataGridViewTriState.True }
             });
             DGV_Clientes.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "Estado",
                 HeaderText = "Estado",
-                Width = 110
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
+                FillWeight = 8
             });
 
-            // estilos básicos (opcional)
-            DGV_Clientes.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
-            DGV_Clientes.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-            DGV_Clientes.DefaultCellStyle.Font = new Font("Segoe UI", 10);
-            DGV_Clientes.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 247, 250);
+            // --- Tema y formatos (EXTENSIONES) ---
+            DGV_Clientes.ApplyTheme(compacto: true);                 // look/feel consistente
+            DGV_Clientes.Center("Telefono", "RFC", "Estado");        // centrado en esas columnas
+            DGV_Clientes.PillByValue("Estado");                      // verde/rojo para estado
 
         }
 
@@ -132,15 +153,21 @@ namespace POS_CHITOS.Clientes
             bool haySel = clienteSel != null;
             B_Modificar.Enabled = haySel;
             B_Estado.Enabled = haySel;
-
+            if (haySel)
+                B_Estado.Text = clienteSel.Estado == "Habilitado"
+                    ? "Deshabilitar (Ctrl + B)"
+                    : "Habilitar (Ctrl + B)";
         }
 
-        private void B_Estado_Click(object sender, EventArgs e)
+
+        private async void B_Estado_ClickAsync(object sender, EventArgs e)
         {
             if (clienteSel == null) return;
-            var activar = clienteSel.Estado == "Habilitado";
-            _svc.CambiarEstado(clienteSel.IdCliente, activar);
-            _ = CargarClientesAsync();
+
+            // toggle de estado
+            _svc.CambiarEstado(clienteSel.IdCliente);   // o pasando el bool invertido, según tu service
+            await CargarClientesAsync();
+            Toast.Show(this, "Estado del cliente actualizado.", ToastType.Info, 2200, ToastPosition.TopRight);
         }
 
         // Atajos
@@ -152,5 +179,35 @@ namespace POS_CHITOS.Clientes
             if (keyData == (Keys.Control | Keys.S)) { TB_BuscarCliente.Focus(); TB_BuscarCliente.SelectAll(); return true; }
             return base.ProcessCmdKey(ref msg, keyData);
         }
+
+        private void B_Agregar_Click(object sender, EventArgs e)
+        {
+            using var f = new V_UpsertCliente(_ctx);
+            if (f.ShowDialog() == DialogResult.OK)
+                _ = CargarClientesAsync();
+            Toast.Show(this, "Cliente creado con éxito.", ToastType.Success, 2200, ToastPosition.Center);
+        }
+
+        private void B_Modificar_Click(object sender, EventArgs e)
+        {
+            if (clienteSel == null) return;
+            using var f = new V_UpsertCliente(_ctx, clienteSel.IdCliente);
+            if (f.ShowDialog(this) == DialogResult.OK)
+                _ = CargarClientesAsync();
+            Toast.Show(this, "Cliente actualizado.", ToastType.Info, 2200, ToastPosition.TopRight);
+        }
+
+        private void AbrirDetalles()
+        {
+            if (clienteSel == null) return;
+            using var f = new V_ClienteDetalle(clienteSel);
+            f.ShowDialog(this);
+        }
+
+        private void DGV_Clientes_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            AbrirDetalles();
+        }
     }
+
 }

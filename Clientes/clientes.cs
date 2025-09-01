@@ -15,6 +15,7 @@ namespace POS_CHITOS.Clientes
         [Column("nombre")] public string Nombre { get; set; }
         [Column("telefono")] public string Telefono { get; set; }
         [Column("rfc")] public string RFC { get; set; }
+        [Column("email")] public string Email { get; set; }
         [Column("direccion")] public string Direccion { get; set; }
         [Column("activo")] public bool Activo { get; set; } = true;
     }
