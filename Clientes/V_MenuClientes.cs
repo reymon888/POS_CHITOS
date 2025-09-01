@@ -32,8 +32,11 @@ namespace POS_CHITOS.Clientes
             // FILTROS
 
             CB_Filtros.DropDownStyle = ComboBoxStyle.DropDownList;
-            CB_Filtros.Items.AddRange(new[] { "Todos", "Habilitados", "Deshabilitados" });
-            CB_Filtros.SelectedIndex = 0;
+            CB_Filtros.Items.Clear();
+            CB_Filtros.Items.AddRange(new[] { "Habilitados", "Todos", "Deshabilitados" });
+            CB_Filtros.SelectedItem = "Habilitados";     // default = activos
+            CB_Filtros.SelectedIndexChanged += (_, __) => AplicarFiltro();
+
 
             TB_BuscarCliente.TextChanged += (_, __) => { _debounce.Stop(); _debounce.Start(); };
             _debounce.Tick += (_, __) => { _debounce.Stop(); AplicarFiltro(); };
@@ -133,8 +136,8 @@ namespace POS_CHITOS.Clientes
             int idx = CB_Filtros.SelectedIndex; // 0 todos, 1 habilitados, 2 deshabilitados
 
             var view = _cache.Where(c =>
-                        (idx == 0) ||
-                        (idx == 1 && c.Estado == "Habilitado") ||
+                        (idx == 0 && c.Estado == "Habilitado") ||
+                        (idx == 1 ) ||
                         (idx == 2 && c.Estado == "Deshabilitado"))
                      .Where(c =>
                         string.IsNullOrEmpty(f) ||

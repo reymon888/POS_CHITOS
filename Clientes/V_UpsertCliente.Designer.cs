@@ -197,6 +197,7 @@
             TB_Telefono.Name = "TB_Telefono";
             TB_Telefono.Size = new Size(287, 44);
             TB_Telefono.TabIndex = 2;
+            TB_Telefono.KeyPress += TB_Telefono_KeyPress;
             // 
             // TB_Nombre
             // 

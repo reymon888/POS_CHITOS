@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -28,6 +29,11 @@ namespace POS_CHITOS.Clientes
             lblTitulo.Text = Mode == ClienteFormMode.Create ? "Agregar Cliente" : "Editar Cliente";
             B_Guardar.Text = Mode == ClienteFormMode.Create ? "Crear" : "Guardar";
 
+            // Reglas de captura
+            TB_Telefono.MaxLength = 10;
+            TB_Telefono.KeyPress += TB_Telefono_KeyPress;   // solo números
+            TB_RFC.CharacterCasing = CharacterCasing.Upper; // RFC en mayúsculas
+
             if (Mode == ClienteFormMode.Edit)
                 CargarCliente(_id!.Value);
 
@@ -47,45 +53,107 @@ namespace POS_CHITOS.Clientes
 
         private void B_Guardar_Click(object sender, EventArgs e)
         {
-           if(string.IsNullOrWhiteSpace(TB_Nombre.Text))
-            { MessageBox.Show("El nombre es obligatorio."/*, "Validación", MessageBoxButtons.OK, MessageBoxIcon.Warning*/);
-                TB_Nombre.Focus(); return; }
+            if (!TryBuildModel(out var model, out var msg))
+            {
+                MessageBox.Show(msg);
+                return;
+            }
+
             try
             {
-                if (Mode == ClienteFormMode.Create) {
-                    _svc.Crear(new clientes
-                    {
-                        Nombre = TB_Nombre.Text.Trim(),
-                        Telefono = TB_Telefono.Text.Trim(),
-                        RFC = TB_RFC.Text.Trim(),
-                        Email = TB_CE.Text.Trim(),
-                        Direccion = TB_Direccion.Text.Trim(),
-                        Activo = true
-                    });
-
-                    
+                if (Mode == ClienteFormMode.Create)
+                {
+                    _svc.Crear(model);
+                    // Toast.Show(this, "Cliente creado con éxito", ToastType.Success);
                 }
                 else
                 {
-                    _svc.Actualizar(new clientes
-                    {
-                        IdCliente = _id!.Value,
-                        Nombre = TB_Nombre.Text.Trim(),
-                        Telefono = TB_Telefono.Text.Trim(),
-                        RFC = TB_RFC.Text.Trim(),
-                        Email = TB_CE.Text.Trim(),
-                        Direccion = TB_Direccion.Text.Trim(),
-                        Activo = true // o mantener el estado actual si es necesario
-                    });
+                    _svc.Actualizar(model);
+                    // Toast.Show(this, "Cliente actualizado", ToastType.Success);
                 }
+
                 DialogResult = DialogResult.OK;
                 Close();
             }
             catch (Exception ex)
             {
-
-                MessageBox.Show("Error al guardar el cliente: " + ex.Message /*, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error*/);
+                MessageBox.Show("Error al guardar el cliente: " + ex.Message);
             }
+        }
+        
+
+        private void TB_Telefono_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+                e.Handled = true;
+        }
+
+        // ---- Validaciones ----
+
+        private static bool IsValidEmail(string? email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return true; // opcional
+            // regex simple y suficiente para UI
+            return Regex.IsMatch(email.Trim(),
+                @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+                RegexOptions.IgnoreCase);
+        }
+
+        private bool TryBuildModel(out clientes model, out string error)
+        {
+            error = string.Empty;
+            model = new clientes();
+
+            string nombre = TB_Nombre.Text.Trim();
+            string dir = TB_Direccion.Text.Trim();
+            string rfc = TB_RFC.Text.Trim().ToUpperInvariant();
+            string email = TB_CE.Text.Trim();
+
+            // Mantén solo dígitos por si pegaron con espacios o guiones
+            string telDigits = new string((TB_Telefono.Text ?? "").Where(char.IsDigit).ToArray());
+
+            if (string.IsNullOrWhiteSpace(nombre))
+            {
+                error = "El nombre es obligatorio.";
+                TB_Nombre.Focus(); return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(telDigits))
+            {
+                error = "El teléfono es obligatorio.";
+                TB_Telefono.Focus(); return false;
+            }
+
+            if (telDigits.Length != 10)
+            {
+                error = "El teléfono debe tener exactamente 10 dígitos.";
+                TB_Telefono.Focus(); return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(dir))
+            {
+                error = "La dirección es obligatoria.";
+                TB_Direccion.Focus(); return false;
+            }
+
+            if (!IsValidEmail(email))
+            {
+                error = "El email no es válido (debe contener @ y dominio).";
+                TB_CE.Focus(); return false;
+            }
+
+            model = new clientes
+            {
+                IdCliente = _id ?? 0,   // ignorado en Crear
+                Nombre = nombre,
+                Telefono = telDigits,
+                RFC = rfc,
+                Email = email,
+                Direccion = dir,
+                Activo = true
+            };
+
+            return true;
         }
     }
 }
