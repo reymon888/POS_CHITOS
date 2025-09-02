@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+ï»¿using Microsoft.EntityFrameworkCore;
 using POS_CHITOS.Clientes;
 using POS_CHITOS.Reportes;
 using POS_CHITOS.Usuarios;
@@ -11,14 +11,14 @@ namespace POS_CHITOS
     {
         private Form activeForm;
         private Usuario _usuarioActual;
-        private Button botonSeleccionado; // Variable para rastrear el botón seleccionado
+        private Button botonSeleccionado; // Variable para rastrear el botÃ³n seleccionado
         private readonly CortesService _cortesService;
         public menuPrincipal(Usuario usuario)
         {
             InitializeComponent();
             // Empiece en pantalla completa
             this.WindowState = FormWindowState.Maximized;
-            // No permitir que cambie el tamaño de la ventana
+            // No permitir que cambie el tamaÃ±o de la ventana
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             // No permitir que se maximice la ventana
             this.MaximizeBox = false;
@@ -49,7 +49,7 @@ namespace POS_CHITOS
             // Asignar eventos a los botones del panel lateral
             foreach (Control control in PanelLateral.Controls)
             {
-                if (control is Button boton && boton.Name != "B_Salir")  // Ignorar el botón de salir
+                if (control is Button boton && boton.Name != "B_Salir")  // Ignorar el botÃ³n de salir
                 {
                     boton.Click += CambiarColorBoton;
                 }
@@ -64,7 +64,7 @@ namespace POS_CHITOS
                 }
             }
 
-            // Configurar los permisos según el rol del usuario
+            // Configurar los permisos segÃºn el rol del usuario
             ConfigurarPermisos();
         }
 
@@ -190,7 +190,7 @@ namespace POS_CHITOS
         {
            
 
-            // Pasamos el usuario actual y el contexto al menú de cortes
+            // Pasamos el usuario actual y el contexto al menÃº de cortes
             openChildForm(new V_MenuCortesCaja(_usuarioActual.Id, CreateContext()));
         }
 
@@ -212,18 +212,18 @@ namespace POS_CHITOS
         // Cambiar color de los botones
         private void CambiarColorBoton(object sender, EventArgs e)
         {
-            // Si había un botón seleccionado previamente, restaurar su color predeterminado
+            // Si habÃ­a un botÃ³n seleccionado previamente, restaurar su color predeterminado
             if (botonSeleccionado != null)
             {
                 botonSeleccionado.BackColor = Color.FromArgb(26, 77, 128); // Color predeterminado
             }
 
-            // Cambiar el color solo al botón que fue clicado
+            // Cambiar el color solo al botÃ³n que fue clicado
             Button botonClicado = sender as Button;
             if (botonClicado != null)
             {
-                botonClicado.BackColor = Color.FromArgb(51, 51, 51); // Color cuando se hace clic
-                botonSeleccionado = botonClicado; // Establecer el botón como el seleccionado
+                botonClicado.BackColor = Color.FromArgb(53, 61, 71); // Color cuando se hace clic
+                botonSeleccionado = botonClicado; // Establecer el botÃ³n como el seleccionado
             }
         }
 
@@ -232,14 +232,14 @@ namespace POS_CHITOS
             openChildForm(new V_MenuReportes());
         }
 
-        // Método para configurar los permisos según el rol del usuario
+        // MÃ©todo para configurar los permisos segÃºn el rol del usuario
         private void ConfigurarPermisos()
         {
             //Si el rol del usuario actual es Cajero o Cajero Principal que no tenga permiso a reportes y usuarios
             if (_usuarioActual.Rol == "Cajero" || _usuarioActual.Rol == "Cajero Principal")
             {
-                B_Usuarios.Visible = false;
-                B_Reportes.Visible = false;
+                //B_Usuarios.Visible = false;
+                //B_Reportes.Visible = false;
             }
 
         }
@@ -262,27 +262,27 @@ namespace POS_CHITOS
             return false;
         }
 
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-        {
-            switch (keyData)
-            {
-                case Keys.F1: return TryClick(B_NuevaVenta) || base.ProcessCmdKey(ref msg, keyData);
-                case Keys.F2: return TryClick(B_Inventario) || base.ProcessCmdKey(ref msg, keyData);
-                case Keys.F3: return TryClick(B_Entradas) || base.ProcessCmdKey(ref msg, keyData);
-                case Keys.F4: return TryClick(B_NuevaCompra) || base.ProcessCmdKey(ref msg, keyData);
-                case Keys.F5: return TryClick(B_Proveedores) || base.ProcessCmdKey(ref msg, keyData);
-                case Keys.F6: return TryClick(B_Usuarios) || base.ProcessCmdKey(ref msg, keyData);
-                case Keys.F7: return TryClick(B_Gastos) || base.ProcessCmdKey(ref msg, keyData);
-                case Keys.F8: return TryClick(B_Compras) || base.ProcessCmdKey(ref msg, keyData);
-                case Keys.F9: return TryClick(B_Reportes) || base.ProcessCmdKey(ref msg, keyData);
-                case Keys.F10: return TryClick(B_Ventas) || base.ProcessCmdKey(ref msg, keyData);
-                case Keys.F11: return TryClick(B_Cortes) || base.ProcessCmdKey(ref msg, keyData);
-                case Keys.F12: return TryClick(B_Salir) || base.ProcessCmdKey(ref msg, keyData);
-                case Keys.Control | Keys.L: return TryClick(B_Clientes) || base.ProcessCmdKey(ref msg, keyData);
-                default:
-                    return base.ProcessCmdKey(ref msg, keyData);
-            }
-        }
+        //protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        //{
+        //    switch (keyData)
+        //    {
+        //        //case Keys.F1: return TryClick(B_NuevaVenta) || base.ProcessCmdKey(ref msg, keyData);
+        //        //case Keys.F2: return TryClick(B_Inventario) || base.ProcessCmdKey(ref msg, keyData);
+        //        //case Keys.F3: return TryClick(B_Entradas) || base.ProcessCmdKey(ref msg, keyData);
+        //        //case Keys.F4: return TryClick(B_NuevaCompra) || base.ProcessCmdKey(ref msg, keyData);
+        //        //case Keys.F5: return TryClick(B_Proveedores) || base.ProcessCmdKey(ref msg, keyData);
+        //        //case Keys.F6: return TryClick(B_Usuarios) || base.ProcessCmdKey(ref msg, keyData);
+        //        //case Keys.F7: return TryClick(B_Gastos) || base.ProcessCmdKey(ref msg, keyData);
+        //        //case Keys.F8: return TryClick(B_Compras) || base.ProcessCmdKey(ref msg, keyData);
+        //        //case Keys.F9: return TryClick(B_Reportes) || base.ProcessCmdKey(ref msg, keyData);
+        //        //case Keys.F10: return TryClick(B_Ventas) || base.ProcessCmdKey(ref msg, keyData);
+        //        //case Keys.F11: return TryClick(B_Cortes) || base.ProcessCmdKey(ref msg, keyData);
+        //        //case Keys.F12: return TryClick(B_Salir) || base.ProcessCmdKey(ref msg, keyData);
+        //        //case Keys.Control | Keys.L: return TryClick(B_Clientes) || base.ProcessCmdKey(ref msg, keyData);
+        //        //default:
+        //        //    return base.ProcessCmdKey(ref msg, keyData);
+        //    }
+        //}
 
 
         private void B_Clientes_Click(object sender, EventArgs e)
@@ -292,8 +292,8 @@ namespace POS_CHITOS
 
         private static POSContext CreateContext()
         {
-            // hoy no cambia nada; si mañana ajustas cadena de conexión o logging,
-            // lo haces aquí y el resto del código ni se entera.
+            // hoy no cambia nada; si maÃ±ana ajustas cadena de conexiÃ³n o logging,
+            // lo haces aquÃ­ y el resto del cÃ³digo ni se entera.
             return new POSContext(new DbContextOptions<POSContext>());
         }
 

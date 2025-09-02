@@ -21,6 +21,7 @@
     </PackageReference>
     <PackageReference Include="PDFsharp" Version="6.1.1" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
+    <PackageReference Include="Siticone.Desktop.UI" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -29,20 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(menuPrincipal));
-            PanelLateral = new Panel();
-            B_Gastos = new Button();
-            B_Usuarios = new Button();
-            B_Proveedores = new Button();
-            B_NuevaCompra = new Button();
-            B_Entradas = new Button();
-            B_Inventario = new Button();
-            B_NuevaVenta = new Button();
             PanelSuperior = new Panel();
-            B_Clientes = new Button();
-            B_Ventas = new Button();
-            B_Reportes = new Button();
-            B_Cortes = new Button();
-            B_Compras = new Button();
             panel1 = new Panel();
             B_Salir = new Button();
             labelCargo = new Label();
@@ -50,291 +37,37 @@
             pictureBox1 = new PictureBox();
             panelEscritorio = new Panel();
             pictureBox3 = new PictureBox();
-            PanelLateral.SuspendLayout();
+            B_Menu = new Button();
+            button1 = new Button();
+            button2 = new Button();
+            button3 = new Button();
+            button4 = new Button();
+            button5 = new Button();
+            button6 = new Button();
+            button7 = new Button();
+            button8 = new Button();
+            button9 = new Button();
+            button10 = new Button();
+            PanelLateral = new Panel();
             PanelSuperior.SuspendLayout();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panelEscritorio.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
+            PanelLateral.SuspendLayout();
             SuspendLayout();
-            // 
-            // PanelLateral
-            // 
-            PanelLateral.BackColor = Color.FromArgb(26, 77, 128);
-            PanelLateral.Controls.Add(B_Gastos);
-            PanelLateral.Controls.Add(B_Usuarios);
-            PanelLateral.Controls.Add(B_Proveedores);
-            PanelLateral.Controls.Add(B_NuevaCompra);
-            PanelLateral.Controls.Add(B_Entradas);
-            PanelLateral.Controls.Add(B_Inventario);
-            PanelLateral.Controls.Add(B_NuevaVenta);
-            PanelLateral.Dock = DockStyle.Left;
-            PanelLateral.Location = new Point(0, 0);
-            PanelLateral.Margin = new Padding(4);
-            PanelLateral.Name = "PanelLateral";
-            PanelLateral.Size = new Size(132, 1241);
-            PanelLateral.TabIndex = 0;
-            PanelLateral.Paint += menuLateral_Paint;
-            // 
-            // B_Gastos
-            // 
-            B_Gastos.AutoSize = true;
-            B_Gastos.Dock = DockStyle.Top;
-            B_Gastos.FlatAppearance.BorderSize = 0;
-            B_Gastos.FlatStyle = FlatStyle.Flat;
-            B_Gastos.Font = new Font("Arial", 9F, FontStyle.Bold);
-            B_Gastos.ForeColor = SystemColors.ButtonFace;
-            B_Gastos.Image = Properties.Resources.salir;
-            B_Gastos.Location = new Point(0, 1050);
-            B_Gastos.Margin = new Padding(4);
-            B_Gastos.Name = "B_Gastos";
-            B_Gastos.Size = new Size(132, 175);
-            B_Gastos.TabIndex = 10;
-            B_Gastos.TabStop = false;
-            B_Gastos.Text = "Gastos $-  (F7)";
-            B_Gastos.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_Gastos.UseVisualStyleBackColor = true;
-            B_Gastos.Click += B_Gastos_Click;
-            // 
-            // B_Usuarios
-            // 
-            B_Usuarios.AutoSize = true;
-            B_Usuarios.Dock = DockStyle.Top;
-            B_Usuarios.FlatAppearance.BorderSize = 0;
-            B_Usuarios.FlatStyle = FlatStyle.Flat;
-            B_Usuarios.Font = new Font("Arial", 9F, FontStyle.Bold);
-            B_Usuarios.ForeColor = SystemColors.ButtonFace;
-            B_Usuarios.Image = Properties.Resources.seguidores;
-            B_Usuarios.Location = new Point(0, 875);
-            B_Usuarios.Margin = new Padding(4);
-            B_Usuarios.Name = "B_Usuarios";
-            B_Usuarios.Size = new Size(132, 175);
-            B_Usuarios.TabIndex = 9;
-            B_Usuarios.TabStop = false;
-            B_Usuarios.Text = "Usuarios (F6)";
-            B_Usuarios.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_Usuarios.UseVisualStyleBackColor = true;
-            B_Usuarios.Click += B_Usuarios_Click;
-            // 
-            // B_Proveedores
-            // 
-            B_Proveedores.AutoSize = true;
-            B_Proveedores.Dock = DockStyle.Top;
-            B_Proveedores.FlatAppearance.BorderSize = 0;
-            B_Proveedores.FlatStyle = FlatStyle.Flat;
-            B_Proveedores.Font = new Font("Arial", 9F, FontStyle.Bold);
-            B_Proveedores.ForeColor = SystemColors.ButtonFace;
-            B_Proveedores.Image = Properties.Resources.mensajero;
-            B_Proveedores.Location = new Point(0, 700);
-            B_Proveedores.Margin = new Padding(4);
-            B_Proveedores.Name = "B_Proveedores";
-            B_Proveedores.Size = new Size(132, 175);
-            B_Proveedores.TabIndex = 5;
-            B_Proveedores.TabStop = false;
-            B_Proveedores.Text = "Proveedor  (F5)";
-            B_Proveedores.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_Proveedores.UseVisualStyleBackColor = true;
-            B_Proveedores.Click += button4_Click;
-            // 
-            // B_NuevaCompra
-            // 
-            B_NuevaCompra.AutoSize = true;
-            B_NuevaCompra.Dock = DockStyle.Top;
-            B_NuevaCompra.FlatAppearance.BorderSize = 0;
-            B_NuevaCompra.FlatStyle = FlatStyle.Flat;
-            B_NuevaCompra.Font = new Font("Arial", 9F, FontStyle.Bold);
-            B_NuevaCompra.ForeColor = SystemColors.ButtonFace;
-            B_NuevaCompra.Image = Properties.Resources.orden__1_;
-            B_NuevaCompra.Location = new Point(0, 525);
-            B_NuevaCompra.Margin = new Padding(4);
-            B_NuevaCompra.Name = "B_NuevaCompra";
-            B_NuevaCompra.Size = new Size(132, 175);
-            B_NuevaCompra.TabIndex = 4;
-            B_NuevaCompra.Text = "Realizar Compra   (F4)";
-            B_NuevaCompra.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_NuevaCompra.UseVisualStyleBackColor = true;
-            B_NuevaCompra.Click += B_NuevaCompra_Click;
-            // 
-            // B_Entradas
-            // 
-            B_Entradas.AutoSize = true;
-            B_Entradas.Dock = DockStyle.Top;
-            B_Entradas.FlatAppearance.BorderSize = 0;
-            B_Entradas.FlatStyle = FlatStyle.Flat;
-            B_Entradas.Font = new Font("Arial", 9F, FontStyle.Bold);
-            B_Entradas.ForeColor = SystemColors.ButtonFace;
-            B_Entradas.Image = Properties.Resources.dinero;
-            B_Entradas.Location = new Point(0, 350);
-            B_Entradas.Margin = new Padding(4);
-            B_Entradas.Name = "B_Entradas";
-            B_Entradas.Size = new Size(132, 175);
-            B_Entradas.TabIndex = 3;
-            B_Entradas.TabStop = false;
-            B_Entradas.Text = "Ingresos (F3)";
-            B_Entradas.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_Entradas.UseVisualStyleBackColor = true;
-            B_Entradas.Click += B_caja_Click;
-            // 
-            // B_Inventario
-            // 
-            B_Inventario.AutoSize = true;
-            B_Inventario.Dock = DockStyle.Top;
-            B_Inventario.FlatAppearance.BorderSize = 0;
-            B_Inventario.FlatStyle = FlatStyle.Flat;
-            B_Inventario.Font = new Font("Arial", 9F, FontStyle.Bold);
-            B_Inventario.ForeColor = SystemColors.ButtonFace;
-            B_Inventario.Image = Properties.Resources.en_stock;
-            B_Inventario.Location = new Point(0, 175);
-            B_Inventario.Margin = new Padding(4);
-            B_Inventario.Name = "B_Inventario";
-            B_Inventario.Size = new Size(132, 175);
-            B_Inventario.TabIndex = 2;
-            B_Inventario.TabStop = false;
-            B_Inventario.Text = "Inventario (F2)";
-            B_Inventario.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_Inventario.UseVisualStyleBackColor = true;
-            B_Inventario.Click += B_Inventario_Click;
-            // 
-            // B_NuevaVenta
-            // 
-            B_NuevaVenta.AutoSize = true;
-            B_NuevaVenta.Dock = DockStyle.Top;
-            B_NuevaVenta.FlatAppearance.BorderSize = 0;
-            B_NuevaVenta.FlatStyle = FlatStyle.Flat;
-            B_NuevaVenta.Font = new Font("Arial", 9F, FontStyle.Bold);
-            B_NuevaVenta.ForeColor = SystemColors.ButtonHighlight;
-            B_NuevaVenta.Image = Properties.Resources.punto_de_venta__1_;
-            B_NuevaVenta.Location = new Point(0, 0);
-            B_NuevaVenta.Margin = new Padding(4);
-            B_NuevaVenta.Name = "B_NuevaVenta";
-            B_NuevaVenta.Size = new Size(132, 175);
-            B_NuevaVenta.TabIndex = 1;
-            B_NuevaVenta.TabStop = false;
-            B_NuevaVenta.Text = "Realizar Venta (F1)";
-            B_NuevaVenta.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_NuevaVenta.UseVisualStyleBackColor = true;
-            B_NuevaVenta.Click += B_NuevaVenta_Click;
             // 
             // PanelSuperior
             // 
             PanelSuperior.BackColor = Color.FromArgb(26, 77, 128);
-            PanelSuperior.Controls.Add(B_Clientes);
-            PanelSuperior.Controls.Add(B_Ventas);
-            PanelSuperior.Controls.Add(B_Reportes);
-            PanelSuperior.Controls.Add(B_Cortes);
-            PanelSuperior.Controls.Add(B_Compras);
             PanelSuperior.Controls.Add(panel1);
             PanelSuperior.Dock = DockStyle.Top;
-            PanelSuperior.Location = new Point(132, 0);
+            PanelSuperior.Location = new Point(268, 0);
             PanelSuperior.Margin = new Padding(4);
             PanelSuperior.Name = "PanelSuperior";
-            PanelSuperior.Size = new Size(1678, 141);
+            PanelSuperior.Size = new Size(1542, 133);
             PanelSuperior.TabIndex = 1;
             PanelSuperior.Paint += menuSuperior_Paint;
-            // 
-            // B_Clientes
-            // 
-            B_Clientes.AutoSize = true;
-            B_Clientes.BackColor = Color.FromArgb(26, 77, 128);
-            B_Clientes.Dock = DockStyle.Left;
-            B_Clientes.FlatAppearance.BorderSize = 0;
-            B_Clientes.FlatStyle = FlatStyle.Flat;
-            B_Clientes.Font = new Font("Arial", 9F, FontStyle.Bold);
-            B_Clientes.ForeColor = SystemColors.ButtonHighlight;
-            B_Clientes.Image = Properties.Resources.conductor;
-            B_Clientes.Location = new Point(503, 0);
-            B_Clientes.Margin = new Padding(4);
-            B_Clientes.Name = "B_Clientes";
-            B_Clientes.Size = new Size(177, 141);
-            B_Clientes.TabIndex = 15;
-            B_Clientes.TabStop = false;
-            B_Clientes.Text = "Clientes (Ctrl + L )";
-            B_Clientes.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_Clientes.UseVisualStyleBackColor = false;
-            B_Clientes.Click += B_Clientes_Click;
-            // 
-            // B_Ventas
-            // 
-            B_Ventas.AutoSize = true;
-            B_Ventas.BackColor = Color.FromArgb(26, 77, 128);
-            B_Ventas.Dock = DockStyle.Left;
-            B_Ventas.FlatAppearance.BorderSize = 0;
-            B_Ventas.FlatStyle = FlatStyle.Flat;
-            B_Ventas.Font = new Font("Arial", 9F, FontStyle.Bold);
-            B_Ventas.ForeColor = SystemColors.ButtonHighlight;
-            B_Ventas.Image = Properties.Resources.grafico_de_barras;
-            B_Ventas.Location = new Point(343, 0);
-            B_Ventas.Margin = new Padding(4);
-            B_Ventas.Name = "B_Ventas";
-            B_Ventas.Size = new Size(160, 141);
-            B_Ventas.TabIndex = 14;
-            B_Ventas.TabStop = false;
-            B_Ventas.Text = "Ventas (F10)";
-            B_Ventas.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_Ventas.UseVisualStyleBackColor = false;
-            B_Ventas.Click += B_Ventas_Click;
-            // 
-            // B_Reportes
-            // 
-            B_Reportes.AutoSize = true;
-            B_Reportes.BackColor = Color.FromArgb(26, 77, 128);
-            B_Reportes.Dock = DockStyle.Left;
-            B_Reportes.FlatAppearance.BorderSize = 0;
-            B_Reportes.FlatStyle = FlatStyle.Flat;
-            B_Reportes.Font = new Font("Arial", 9F, FontStyle.Bold);
-            B_Reportes.ForeColor = SystemColors.ButtonHighlight;
-            B_Reportes.Image = Properties.Resources.reporte;
-            B_Reportes.Location = new Point(171, 0);
-            B_Reportes.Margin = new Padding(4);
-            B_Reportes.Name = "B_Reportes";
-            B_Reportes.Size = new Size(172, 141);
-            B_Reportes.TabIndex = 13;
-            B_Reportes.TabStop = false;
-            B_Reportes.Text = "Reportes (F9)";
-            B_Reportes.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_Reportes.UseVisualStyleBackColor = false;
-            B_Reportes.Click += B_Reportes_Click_1;
-            // 
-            // B_Cortes
-            // 
-            B_Cortes.AutoSize = true;
-            B_Cortes.Dock = DockStyle.Right;
-            B_Cortes.FlatAppearance.BorderSize = 0;
-            B_Cortes.FlatStyle = FlatStyle.Flat;
-            B_Cortes.Font = new Font("Arial", 9F, FontStyle.Bold);
-            B_Cortes.ForeColor = SystemColors.ButtonFace;
-            B_Cortes.Image = Properties.Resources.cajero_automatico;
-            B_Cortes.Location = new Point(1023, 0);
-            B_Cortes.Margin = new Padding(4);
-            B_Cortes.Name = "B_Cortes";
-            B_Cortes.Size = new Size(139, 141);
-            B_Cortes.TabIndex = 4;
-            B_Cortes.TabStop = false;
-            B_Cortes.Text = "Caja (F11)";
-            B_Cortes.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_Cortes.UseVisualStyleBackColor = true;
-            B_Cortes.Click += B_Cortes_Click;
-            // 
-            // B_Compras
-            // 
-            B_Compras.AutoSize = true;
-            B_Compras.BackColor = Color.FromArgb(26, 77, 128);
-            B_Compras.Dock = DockStyle.Left;
-            B_Compras.FlatAppearance.BorderSize = 0;
-            B_Compras.FlatStyle = FlatStyle.Flat;
-            B_Compras.Font = new Font("Arial", 9F, FontStyle.Bold);
-            B_Compras.ForeColor = SystemColors.ButtonHighlight;
-            B_Compras.Image = Properties.Resources.tienda_online__1_;
-            B_Compras.Location = new Point(0, 0);
-            B_Compras.Margin = new Padding(4);
-            B_Compras.Name = "B_Compras";
-            B_Compras.Size = new Size(171, 141);
-            B_Compras.TabIndex = 12;
-            B_Compras.TabStop = false;
-            B_Compras.Text = "Compras (F8)";
-            B_Compras.TextImageRelation = TextImageRelation.ImageAboveText;
-            B_Compras.UseVisualStyleBackColor = false;
-            B_Compras.Click += B_Compras_Click;
             // 
             // panel1
             // 
@@ -344,10 +77,10 @@
             panel1.Controls.Add(labelUsuario);
             panel1.Controls.Add(pictureBox1);
             panel1.Dock = DockStyle.Right;
-            panel1.Location = new Point(1162, 0);
+            panel1.Location = new Point(1026, 0);
             panel1.Margin = new Padding(4);
             panel1.Name = "panel1";
-            panel1.Size = new Size(516, 141);
+            panel1.Size = new Size(516, 133);
             panel1.TabIndex = 0;
             // 
             // B_Salir
@@ -362,7 +95,7 @@
             B_Salir.Location = new Point(431, 0);
             B_Salir.Margin = new Padding(4);
             B_Salir.Name = "B_Salir";
-            B_Salir.Size = new Size(85, 141);
+            B_Salir.Size = new Size(85, 133);
             B_Salir.TabIndex = 11;
             B_Salir.TabStop = false;
             B_Salir.Text = " (F12)";
@@ -411,10 +144,10 @@
             panelEscritorio.BackColor = SystemColors.ActiveBorder;
             panelEscritorio.Controls.Add(pictureBox3);
             panelEscritorio.Dock = DockStyle.Fill;
-            panelEscritorio.Location = new Point(132, 141);
+            panelEscritorio.Location = new Point(268, 133);
             panelEscritorio.Margin = new Padding(4);
             panelEscritorio.Name = "panelEscritorio";
-            panelEscritorio.Size = new Size(1678, 1100);
+            panelEscritorio.Size = new Size(1542, 1108);
             panelEscritorio.TabIndex = 2;
             // 
             // pictureBox3
@@ -422,13 +155,235 @@
             pictureBox3.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             pictureBox3.BackColor = SystemColors.ButtonHighlight;
             pictureBox3.Image = Properties.Resources.Chitos__1_;
-            pictureBox3.Location = new Point(4, 8);
+            pictureBox3.Location = new Point(4, -7);
             pictureBox3.Margin = new Padding(4);
             pictureBox3.Name = "pictureBox3";
-            pictureBox3.Size = new Size(1666, 1115);
+            pictureBox3.Size = new Size(1530, 1138);
             pictureBox3.SizeMode = PictureBoxSizeMode.CenterImage;
             pictureBox3.TabIndex = 0;
             pictureBox3.TabStop = false;
+            // 
+            // B_Menu
+            // 
+            B_Menu.AutoSize = true;
+            B_Menu.Dock = DockStyle.Top;
+            B_Menu.FlatAppearance.BorderSize = 0;
+            B_Menu.FlatStyle = FlatStyle.Flat;
+            B_Menu.Font = new Font("Arial", 9F, FontStyle.Bold);
+            B_Menu.ForeColor = SystemColors.ButtonFace;
+            B_Menu.Image = Properties.Resources.lista;
+            B_Menu.Location = new Point(0, 0);
+            B_Menu.Margin = new Padding(4);
+            B_Menu.Name = "B_Menu";
+            B_Menu.Size = new Size(268, 133);
+            B_Menu.TabIndex = 3;
+            B_Menu.TabStop = false;
+            B_Menu.TextImageRelation = TextImageRelation.ImageAboveText;
+            B_Menu.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            button1.AutoSize = true;
+            button1.BackColor = Color.FromArgb(0, 1, 227, 106);
+            button1.Dock = DockStyle.Top;
+            button1.FlatAppearance.BorderSize = 0;
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.Font = new Font("Arial", 9F, FontStyle.Bold);
+            button1.ForeColor = SystemColors.ButtonFace;
+            button1.Image = Properties.Resources.payments_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24;
+            button1.Location = new Point(0, 133);
+            button1.Margin = new Padding(4);
+            button1.Name = "button1";
+            button1.Size = new Size(268, 83);
+            button1.TabIndex = 4;
+            button1.TabStop = false;
+            button1.TextImageRelation = TextImageRelation.ImageAboveText;
+            button1.UseVisualStyleBackColor = false;
+            // 
+            // button2
+            // 
+            button2.AutoSize = true;
+            button2.BackColor = Color.FromArgb(0, 1, 227, 106);
+            button2.Dock = DockStyle.Top;
+            button2.FlatAppearance.BorderSize = 0;
+            button2.FlatStyle = FlatStyle.Flat;
+            button2.Font = new Font("Arial", 9F, FontStyle.Bold);
+            button2.ForeColor = SystemColors.ButtonFace;
+            button2.Image = Properties.Resources.metodo_de_pago__1_;
+            button2.Location = new Point(0, 216);
+            button2.Margin = new Padding(4);
+            button2.Name = "button2";
+            button2.Size = new Size(268, 83);
+            button2.TabIndex = 5;
+            button2.TabStop = false;
+            button2.TextImageRelation = TextImageRelation.ImageAboveText;
+            button2.UseVisualStyleBackColor = false;
+            // 
+            // button3
+            // 
+            button3.AutoSize = true;
+            button3.Dock = DockStyle.Top;
+            button3.FlatAppearance.BorderSize = 0;
+            button3.FlatStyle = FlatStyle.Flat;
+            button3.Font = new Font("Arial", 9F, FontStyle.Bold);
+            button3.ForeColor = SystemColors.ButtonFace;
+            button3.Image = Properties.Resources.lista;
+            button3.Location = new Point(0, 299);
+            button3.Margin = new Padding(4);
+            button3.Name = "button3";
+            button3.Size = new Size(268, 83);
+            button3.TabIndex = 6;
+            button3.TabStop = false;
+            button3.TextImageRelation = TextImageRelation.ImageAboveText;
+            button3.UseVisualStyleBackColor = true;
+            // 
+            // button4
+            // 
+            button4.AutoSize = true;
+            button4.Dock = DockStyle.Top;
+            button4.FlatAppearance.BorderSize = 0;
+            button4.FlatStyle = FlatStyle.Flat;
+            button4.Font = new Font("Arial", 9F, FontStyle.Bold);
+            button4.ForeColor = SystemColors.ButtonFace;
+            button4.Image = Properties.Resources.lista;
+            button4.Location = new Point(0, 382);
+            button4.Margin = new Padding(4);
+            button4.Name = "button4";
+            button4.Size = new Size(268, 83);
+            button4.TabIndex = 7;
+            button4.TabStop = false;
+            button4.TextImageRelation = TextImageRelation.ImageAboveText;
+            button4.UseVisualStyleBackColor = true;
+            // 
+            // button5
+            // 
+            button5.AutoSize = true;
+            button5.Dock = DockStyle.Top;
+            button5.FlatAppearance.BorderSize = 0;
+            button5.FlatStyle = FlatStyle.Flat;
+            button5.Font = new Font("Arial", 9F, FontStyle.Bold);
+            button5.ForeColor = SystemColors.ButtonFace;
+            button5.Image = Properties.Resources.lista;
+            button5.Location = new Point(0, 465);
+            button5.Margin = new Padding(4);
+            button5.Name = "button5";
+            button5.Size = new Size(268, 83);
+            button5.TabIndex = 8;
+            button5.TabStop = false;
+            button5.TextImageRelation = TextImageRelation.ImageAboveText;
+            button5.UseVisualStyleBackColor = true;
+            // 
+            // button6
+            // 
+            button6.AutoSize = true;
+            button6.Dock = DockStyle.Top;
+            button6.FlatAppearance.BorderSize = 0;
+            button6.FlatStyle = FlatStyle.Flat;
+            button6.Font = new Font("Arial", 9F, FontStyle.Bold);
+            button6.ForeColor = SystemColors.ButtonFace;
+            button6.Image = Properties.Resources.lista;
+            button6.Location = new Point(0, 548);
+            button6.Margin = new Padding(4);
+            button6.Name = "button6";
+            button6.Size = new Size(268, 83);
+            button6.TabIndex = 9;
+            button6.TabStop = false;
+            button6.TextImageRelation = TextImageRelation.ImageAboveText;
+            button6.UseVisualStyleBackColor = true;
+            // 
+            // button7
+            // 
+            button7.AutoSize = true;
+            button7.Dock = DockStyle.Top;
+            button7.FlatAppearance.BorderSize = 0;
+            button7.FlatStyle = FlatStyle.Flat;
+            button7.Font = new Font("Arial", 9F, FontStyle.Bold);
+            button7.ForeColor = SystemColors.ButtonFace;
+            button7.Image = Properties.Resources.lista;
+            button7.Location = new Point(0, 631);
+            button7.Margin = new Padding(4);
+            button7.Name = "button7";
+            button7.Size = new Size(268, 83);
+            button7.TabIndex = 10;
+            button7.TabStop = false;
+            button7.TextImageRelation = TextImageRelation.ImageAboveText;
+            button7.UseVisualStyleBackColor = true;
+            // 
+            // button8
+            // 
+            button8.AutoSize = true;
+            button8.Dock = DockStyle.Top;
+            button8.FlatAppearance.BorderSize = 0;
+            button8.FlatStyle = FlatStyle.Flat;
+            button8.Font = new Font("Arial", 9F, FontStyle.Bold);
+            button8.ForeColor = SystemColors.ButtonFace;
+            button8.Image = Properties.Resources.lista;
+            button8.Location = new Point(0, 714);
+            button8.Margin = new Padding(4);
+            button8.Name = "button8";
+            button8.Size = new Size(268, 83);
+            button8.TabIndex = 11;
+            button8.TabStop = false;
+            button8.TextImageRelation = TextImageRelation.ImageAboveText;
+            button8.UseVisualStyleBackColor = true;
+            // 
+            // button9
+            // 
+            button9.AutoSize = true;
+            button9.Dock = DockStyle.Top;
+            button9.FlatAppearance.BorderSize = 0;
+            button9.FlatStyle = FlatStyle.Flat;
+            button9.Font = new Font("Arial", 9F, FontStyle.Bold);
+            button9.ForeColor = SystemColors.ButtonFace;
+            button9.Image = Properties.Resources.lista;
+            button9.Location = new Point(0, 797);
+            button9.Margin = new Padding(4);
+            button9.Name = "button9";
+            button9.Size = new Size(268, 83);
+            button9.TabIndex = 12;
+            button9.TabStop = false;
+            button9.TextImageRelation = TextImageRelation.ImageAboveText;
+            button9.UseVisualStyleBackColor = true;
+            // 
+            // button10
+            // 
+            button10.AutoSize = true;
+            button10.Dock = DockStyle.Top;
+            button10.FlatAppearance.BorderSize = 0;
+            button10.FlatStyle = FlatStyle.Flat;
+            button10.Font = new Font("Arial", 9F, FontStyle.Bold);
+            button10.ForeColor = SystemColors.ButtonFace;
+            button10.Image = Properties.Resources.lista;
+            button10.Location = new Point(0, 880);
+            button10.Margin = new Padding(4);
+            button10.Name = "button10";
+            button10.Size = new Size(268, 83);
+            button10.TabIndex = 13;
+            button10.TabStop = false;
+            button10.TextImageRelation = TextImageRelation.ImageAboveText;
+            button10.UseVisualStyleBackColor = true;
+            // 
+            // PanelLateral
+            // 
+            PanelLateral.BackColor = Color.FromArgb(26, 77, 128);
+            PanelLateral.Controls.Add(button10);
+            PanelLateral.Controls.Add(button9);
+            PanelLateral.Controls.Add(button8);
+            PanelLateral.Controls.Add(button7);
+            PanelLateral.Controls.Add(button6);
+            PanelLateral.Controls.Add(button5);
+            PanelLateral.Controls.Add(button4);
+            PanelLateral.Controls.Add(button3);
+            PanelLateral.Controls.Add(button2);
+            PanelLateral.Controls.Add(button1);
+            PanelLateral.Controls.Add(B_Menu);
+            PanelLateral.Dock = DockStyle.Left;
+            PanelLateral.Location = new Point(0, 0);
+            PanelLateral.Margin = new Padding(4);
+            PanelLateral.Name = "PanelLateral";
+            PanelLateral.Size = new Size(268, 1241);
+            PanelLateral.TabIndex = 0;
+            PanelLateral.Paint += menuLateral_Paint;
             // 
             // menuPrincipal
             // 
@@ -445,40 +400,37 @@
             Text = "Punto de Venta Chito's";
             Load += Form1_Load;
             KeyDown += menuPrincipal_KeyDown;
-            PanelLateral.ResumeLayout(false);
-            PanelLateral.PerformLayout();
             PanelSuperior.ResumeLayout(false);
-            PanelSuperior.PerformLayout();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             panelEscritorio.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)pictureBox3).EndInit();
+            PanelLateral.ResumeLayout(false);
+            PanelLateral.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
-
-        private Panel PanelLateral;
         private Panel PanelSuperior;
         private Panel panelEscritorio;
-        private Button B_NuevaVenta;
         private Panel panel1;
         private Label labelUsuario;
         private PictureBox pictureBox1;
-        private Button B_Proveedores;
-        private Button B_NuevaCompra;
-        private Button B_Entradas;
-        private Button B_Inventario;
         private Label labelCargo;
-        private Button B_Usuarios;
-        private Button B_Ventas;
-        private Button B_Reportes;
-        private Button B_Compras;
         private Button B_Salir;
-        private Button B_Gastos;
         private PictureBox pictureBox3;
-        private Button B_Cortes;
-        private Button B_Clientes;
+        private Button B_Menu;
+        private Button button1;
+        private Button button2;
+        private Button button3;
+        private Button button4;
+        private Button button5;
+        private Button button6;
+        private Button button7;
+        private Button button8;
+        private Button button9;
+        private Button button10;
+        private Panel PanelLateral;
     }
 }
