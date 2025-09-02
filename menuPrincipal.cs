@@ -3,6 +3,7 @@ using POS_CHITOS.Clientes;
 using POS_CHITOS.Reportes;
 using POS_CHITOS.Usuarios;
 using System.Diagnostics;
+using System.Drawing.Drawing2D;
 using System.Security.Cryptography.X509Certificates;
 
 namespace POS_CHITOS
@@ -13,6 +14,21 @@ namespace POS_CHITOS
         private Usuario _usuarioActual;
         private Button botonSeleccionado; // Variable para rastrear el botón seleccionado
         private readonly CortesService _cortesService;
+
+        // --- Sidebar state/animación ---
+        bool sideExpanded = false;
+        int SIDE_W_COLLAPSED = 72;      // colapsado
+        int SIDE_W_EXPANDED = 260;     // expandido
+        int SIDE_STEP = 12;      // px por tick
+        int SIDE_TEXT_LIMIT = 140;     // desde aquí ya muestro texto
+
+        System.Windows.Forms.Timer sideTimer;
+        int sideTargetWidth;
+
+        ToolTip sideTips = new ToolTip();
+
+
+
         public menuPrincipal(Usuario usuario)
         {
             InitializeComponent();
@@ -66,28 +82,45 @@ namespace POS_CHITOS
 
             // Configurar los permisos según el rol del usuario
             ConfigurarPermisos();
+
+
+
+            // Dock/estilo del lateral
+            PanelLateral.Dock = DockStyle.Left;
+            PanelLateral.Width = SIDE_W_COLLAPSED;
+            PanelLateral.Padding = new Padding(0, 12, 0, 12);
+
+            PanelLateral.BackColor = Color.FromArgb(31, 79, 120);  // #1F4F78
+            PanelLateral.AutoScroll = true;
+
+            // Configura TODOS los botones ya existentes del lateral (apilar + estilos)
+            ConfigurarBotonesLateral(PanelLateral);
+
+            // Timer animación
+            sideTimer = new System.Windows.Forms.Timer { Interval = 15 }; // ~60fps
+            sideTimer.Tick += SideTimer_Tick;
+
+            // Si tu botón hamburguesa se llama distinto, cámbialo aquí:
+            B_Menu.Click += (s, e) =>
+            {
+                sideExpanded = !sideExpanded;
+                sideTargetWidth = sideExpanded ? SIDE_W_EXPANDED : SIDE_W_COLLAPSED;
+                sideTimer.Start();
+            };
+
+            PanelLateral.AutoScroll = false;   // listo, no habrá barras
+
+            OrdenarPorTabIndex();
+
+
+
+
+            // Redondear los botones
+            RedondearBoton(btnNuevaVenta, 40);
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
-        }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            //cerrar esta ventaja y abrir el login
-
-            this.Close();
-            var loginForm = new V_LogIn();
-
-            loginForm.Show();
-
-
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-           openChildForm(new V_menuProveedor(_usuarioActual.Id, CreateContext()));
 
         }
 
@@ -121,111 +154,21 @@ namespace POS_CHITOS
 
         }
 
-        private void B_Inventario_Click(object sender, EventArgs e)
-        {
-            // Pasar el contexto al crear el formulario
-            openChildForm(new V_menuInventario(_usuarioActual.Id, CreateContext()));
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            
-            // Pasar el contexto al crear el formulario
-            openChildForm(new V_menuUsuarios(CreateContext()));
-        }
-
-        private void B_reportes_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void menuLateral_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void button6_Click_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void B_Usuarios_Click(object sender, EventArgs e)
-        {
-             // Pasar el contexto al crear el formulario
-            openChildForm(new V_menuUsuarios(CreateContext()));
-        }
-
-        private void B_NuevaCompra_Click(object sender, EventArgs e)
-        {
-           // Crear una nueva instancia de V_CreateCompra y pasar el ID del usuario actual
-            openChildForm(new V_CreateCompra(_usuarioActual.Id));  // Asume que _usuarioActual tiene el ID del usuario
-        }
-
-        private void B_Compras_Click(object sender, EventArgs e)
-        {
-            
-            // Pasar el contexto al crear el formulario
-            openChildForm(new V_MenuCompras(_usuarioActual.Id, CreateContext()));
-        }
-
-        private void B_NuevaVenta_Click(object sender, EventArgs e)
-        {
-           
-            openChildForm(new V_CreateVenta(_usuarioActual.Id));
-        }
-
-        private void B_Ventas_Click(object sender, EventArgs e)
-        {
-            
-            openChildForm(new V_MenuVentas(_usuarioActual.Id, CreateContext()));
-        }
-
-        private void B_caja_Click(object sender, EventArgs e)
-        {
-           
-            openChildForm(new V_menuEntradasEfectivo(_usuarioActual.Id, CreateContext()));
-        }
-
-        private void B_Cortes_Click(object sender, EventArgs e)
-        {
-           
-
-            // Pasamos el usuario actual y el contexto al menú de cortes
-            openChildForm(new V_MenuCortesCaja(_usuarioActual.Id, CreateContext()));
-        }
-
-        private void B_Gastos_Click(object sender, EventArgs e)
-        {
-           
-            openChildForm(new V_MenuSalidasEfectivo(_usuarioActual.Id, CreateContext()));
-        }
-
-        private void B_Salir_Click(object sender, EventArgs e)
-        {
-            // logout: volver a login sin petatear la app
-            var login = new V_LogIn();
-            login.FormClosed += (_, __) => this.Close(); // cuando se cierre login, ya cerramos todo
-            this.Hide();
-            login.Show();
-        }
         // Cambiar color de los botones del panel lateral
         // Cambiar color de los botones
         private void CambiarColorBoton(object sender, EventArgs e)
         {
-            // Si había un botón seleccionado previamente, restaurar su color predeterminado
             if (botonSeleccionado != null)
-            {
-                botonSeleccionado.BackColor = Color.FromArgb(26, 77, 128); // Color predeterminado
-            }
+                botonSeleccionado.BackColor = PanelLateral.BackColor; // el azul del side
 
-            // Cambiar el color solo al botón que fue clicado
-            Button botonClicado = sender as Button;
-            if (botonClicado != null)
+            if (sender is Button b)
             {
-                botonClicado.BackColor = Color.FromArgb(53, 61, 71); // Color cuando se hace clic
-                botonSeleccionado = botonClicado; // Establecer el botón como el seleccionado
+                b.UseVisualStyleBackColor = false;
+                b.BackColor = Color.FromArgb(53, 61, 71); // activo
+                botonSeleccionado = b;
             }
         }
+
 
         private void B_Reportes_Click_1(object sender, EventArgs e)
         {
@@ -284,18 +227,188 @@ namespace POS_CHITOS
         //    }
         //}
 
-
-        private void B_Clientes_Click(object sender, EventArgs e)
-        {
-            openChildForm(new V_MenuClientes(CreateContext()));
-        }
-
         private static POSContext CreateContext()
         {
             // hoy no cambia nada; si mañana ajustas cadena de conexión o logging,
             // lo haces aquí y el resto del código ni se entera.
             return new POSContext(new DbContextOptions<POSContext>());
         }
+        private void RedondearBoton(Button boton, int radio)
+        {
+            GraphicsPath path = new GraphicsPath();
+            Rectangle rect = new Rectangle(0, 0, boton.Width, boton.Height);
 
+            path.AddArc(rect.X, rect.Y, radio, radio, 180, 90);
+            path.AddArc(rect.Right - radio, rect.Y, radio, radio, 270, 90);
+            path.AddArc(rect.Right - radio, rect.Bottom - radio, radio, radio, 0, 90);
+            path.AddArc(rect.X, rect.Bottom - radio, radio, radio, 90, 90);
+            path.CloseFigure();
+
+            boton.Region = new Region(path);
+        }
+
+        private void flowLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void ConfigurarBotonesLateral(Panel side)
+        {
+            // Orden por posición (o usa TabIndex)
+            var btns = side.Controls.OfType<Button>()
+                        .Where(b => b.Name != "B_Salir") // si quieres excluir Salir
+                        .OrderBy(b => b.Top).ToList();
+
+            foreach (var b in btns)
+            {
+                if (b.Tag == null) b.Tag = b.Text;  // guardo su texto original
+                b.Text = "";                        // colapsado
+
+                b.Dock = DockStyle.Top;             // apilar
+                b.Height = 44;
+                b.FlatStyle = FlatStyle.Flat;
+                b.FlatAppearance.BorderSize = 0;
+                b.UseVisualStyleBackColor = false;
+
+                // Colores/estados (coinciden con lo que ya usas)
+                b.BackColor = Color.Transparent;
+                b.ForeColor = Color.White;
+                b.FlatAppearance.MouseOverBackColor = Color.FromArgb(61, 70, 82); // #3D4652
+                b.FlatAppearance.MouseDownBackColor = Color.FromArgb(53, 61, 71); // #353D47
+
+                // Alineaciones (icono izq, texto izq)
+                b.ImageAlign = ContentAlignment.MiddleLeft;
+                b.TextAlign = ContentAlignment.MiddleLeft;
+                b.TextImageRelation = TextImageRelation.ImageBeforeText;
+
+                // Separador entre botones
+                var spacer = new Panel { Dock = DockStyle.Top, Height = 8 };
+                side.Controls.Add(spacer);
+                b.BringToFront();
+
+                // Tooltip (cuando está colapsado)
+                sideTips.SetToolTip(b, b.Tag?.ToString() ?? "");
+
+                b.Margin = new Padding(0);             // sin márgenes laterales
+                b.Padding = new Padding(14, 0, 10, 0);  // espacio interno (no del panel)
+
+
+
+            }
+        }
+
+        private void SideTimer_Tick(object sender, EventArgs e)
+        {
+            int w = PanelLateral.Width;
+            int dir = (w < sideTargetWidth) ? 1 : -1;
+            int next = w + dir * SIDE_STEP;
+
+            // clamp + fin animación
+            if ((dir > 0 && next >= sideTargetWidth) || (dir < 0 && next <= sideTargetWidth))
+            { next = sideTargetWidth; sideTimer.Stop(); }
+
+            PanelLateral.SuspendLayout();
+            PanelLateral.Width = next;
+            UpdateSidebarLabels(next);
+            PanelLateral.ResumeLayout();
+        }
+
+        private void UpdateSidebarLabels(int width)
+        {
+            bool showText = width >= SIDE_TEXT_LIMIT;
+
+            foreach (var b in PanelLateral.Controls.OfType<Button>())
+            {
+                if (b.Name == "B_Salir") continue; // si excluyes salir
+                b.Text = showText ? (b.Tag?.ToString() ?? "") : "";
+                b.Padding = showText ? new Padding(10, 0, 10, 0) : Padding.Empty;
+            }
+            sideTips.Active = !showText; // tooltips sólo colapsado
+        }
+
+        private void FixSidebar()
+        {
+            PanelLateral.Dock = DockStyle.Left;
+            PanelLateral.Padding = new Padding(0, 12, 0, 12);
+            PanelLateral.AutoScroll = true;
+
+            PanelLateral.SuspendLayout();
+
+            // Toma los botones ya puestos y ordénalos
+            var btns = PanelLateral.Controls
+                .OfType<Button>()
+                .OrderBy(b => b.Top)           // o .OrderBy(b => b.TabIndex)
+                .ToList();
+
+            // Reapílalos en una sola columna
+            foreach (var b in btns)
+            {
+                if (b.Tag == null) b.Tag = b.Text; // guarda el texto original para cuando se expanda
+                b.Text = "";                       // colapsado
+
+                b.AutoSize = false;
+                b.Dock = DockStyle.Top;            // << apilar vertical
+                b.Height = 44;
+                b.Width = PanelLateral.ClientSize.Width - PanelLateral.Padding.Left - PanelLateral.Padding.Right;
+
+                b.FlatStyle = FlatStyle.Flat;
+                b.FlatAppearance.BorderSize = 0;
+                b.BackColor = Color.Transparent;
+                b.ForeColor = Color.White;
+                b.FlatAppearance.MouseOverBackColor = Color.FromArgb(61, 70, 82); // #3D4652
+                b.FlatAppearance.MouseDownBackColor = Color.FromArgb(53, 61, 71); // #353D47
+
+                b.ImageAlign = ContentAlignment.MiddleLeft;
+                b.TextAlign = ContentAlignment.MiddleLeft;
+                b.TextImageRelation = TextImageRelation.ImageBeforeText;
+                b.Padding = new Padding(10, 0, 10, 0);
+
+                // separador entre botones
+                var spacer = new Panel
+                {
+                    Dock = DockStyle.Top,
+                    Height = 8,
+                    Margin = new Padding(0),   // ← importante
+                    Padding = new Padding(0)
+                };
+                PanelLateral.Controls.Add(spacer);
+                b.BringToFront(); // el botón arriba del separador
+
+
+            }
+
+            PanelLateral.ResumeLayout();
+        }
+
+        private void PanelLateral_Resize(object sender, EventArgs e)
+        {
+            int w = PanelLateral.ClientSize.Width - PanelLateral.Padding.Left - PanelLateral.Padding.Right;
+            foreach (var b in PanelLateral.Controls.OfType<Button>())
+                b.Width = w;   // así el fondo hover/activo cubre la fila completa
+        }
+
+        private void OrdenarPorTabIndex()
+        {
+            var btns = PanelLateral.Controls.OfType<Button>()
+                         .Where(b => b.Dock != DockStyle.Bottom)   // deja fuera los de abajo
+                         .OrderBy(b => b.TabIndex)                 // ARRIBA → ABAJO
+                         .ToList();
+
+            PanelLateral.SuspendLayout();
+            for (int i = btns.Count - 1; i >= 0; i--)              // agrega de abajo hacia arriba
+            {
+                var b = btns[i];
+                b.Dock = DockStyle.Top;
+                PanelLateral.Controls.SetChildIndex(b, 0);
+            }
+            PanelLateral.ResumeLayout();
+        }
+
+        private void B_Ventas_Click(object sender, EventArgs e)
+        {
+            //// Abrir el formulario de ventas
+            //openChildForm(new V_MenuVentas(_usuarioActual, CreateContext()));
+
+        }
     }
 }
