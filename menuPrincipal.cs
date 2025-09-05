@@ -2,8 +2,10 @@
 using POS_CHITOS.Clientes;
 using POS_CHITOS.Reportes;
 using POS_CHITOS.Usuarios;
+using POS_CHITOS.Utils;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 
 namespace POS_CHITOS
@@ -14,6 +16,7 @@ namespace POS_CHITOS
         private Usuario _usuarioActual;
         private Button botonSeleccionado; // Variable para rastrear el botón seleccionado
         private readonly CortesService _cortesService;
+        private Toast _toastActual;
 
         // --- Sidebar state/animación ---
         bool sideExpanded = false;
@@ -96,17 +99,9 @@ namespace POS_CHITOS
             // Configura TODOS los botones ya existentes del lateral (apilar + estilos)
             ConfigurarBotonesLateral(PanelLateral);
 
-            // Timer animación
-            sideTimer = new System.Windows.Forms.Timer { Interval = 15 }; // ~60fps
-            sideTimer.Tick += SideTimer_Tick;
 
-            // Si tu botón hamburguesa se llama distinto, cámbialo aquí:
-            B_Menu.Click += (s, e) =>
-            {
-                sideExpanded = !sideExpanded;
-                sideTargetWidth = sideExpanded ? SIDE_W_EXPANDED : SIDE_W_COLLAPSED;
-                sideTimer.Start();
-            };
+
+
 
             PanelLateral.AutoScroll = false;   // listo, no habrá barras
 
@@ -117,6 +112,28 @@ namespace POS_CHITOS
 
             // Redondear los botones
             RedondearBoton(btnNuevaVenta, 40);
+
+
+
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
+            this.UpdateStyles();
+
+            EnableDoubleBuffer(this);
+            EnableDoubleBuffer(PanelSuperior);
+            EnableDoubleBuffer(PanelLateral);
+            EnableDoubleBuffer(panelEscritorio);
+            // si usas DataGridView:
+            // EnableDoubleBuffer(miDataGridView);
+
+
+            SetMeta(B_Ventas, "Ventas", "F12");
+            SetMeta(B_Compras, "Compras", "Ctrl + M");
+            SetMeta(B_Clientes, "Clientes", "Ctrl + L");
+            SetMeta(B_Reportes, "Reportes", "F9");
+            SetMeta(B_Usuarios, "Usuarios", "F6");
+
+            WireSidebarToasts();
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -297,88 +314,8 @@ namespace POS_CHITOS
             }
         }
 
-        private void SideTimer_Tick(object sender, EventArgs e)
-        {
-            int w = PanelLateral.Width;
-            int dir = (w < sideTargetWidth) ? 1 : -1;
-            int next = w + dir * SIDE_STEP;
-
-            // clamp + fin animación
-            if ((dir > 0 && next >= sideTargetWidth) || (dir < 0 && next <= sideTargetWidth))
-            { next = sideTargetWidth; sideTimer.Stop(); }
-
-            PanelLateral.SuspendLayout();
-            PanelLateral.Width = next;
-            UpdateSidebarLabels(next);
-            PanelLateral.ResumeLayout();
-        }
-
-        private void UpdateSidebarLabels(int width)
-        {
-            bool showText = width >= SIDE_TEXT_LIMIT;
-
-            foreach (var b in PanelLateral.Controls.OfType<Button>())
-            {
-                if (b.Name == "B_Salir") continue; // si excluyes salir
-                b.Text = showText ? (b.Tag?.ToString() ?? "") : "";
-                b.Padding = showText ? new Padding(10, 0, 10, 0) : Padding.Empty;
-            }
-            sideTips.Active = !showText; // tooltips sólo colapsado
-        }
-
-        private void FixSidebar()
-        {
-            PanelLateral.Dock = DockStyle.Left;
-            PanelLateral.Padding = new Padding(0, 12, 0, 12);
-            PanelLateral.AutoScroll = true;
-
-            PanelLateral.SuspendLayout();
-
-            // Toma los botones ya puestos y ordénalos
-            var btns = PanelLateral.Controls
-                .OfType<Button>()
-                .OrderBy(b => b.Top)           // o .OrderBy(b => b.TabIndex)
-                .ToList();
-
-            // Reapílalos en una sola columna
-            foreach (var b in btns)
-            {
-                if (b.Tag == null) b.Tag = b.Text; // guarda el texto original para cuando se expanda
-                b.Text = "";                       // colapsado
-
-                b.AutoSize = false;
-                b.Dock = DockStyle.Top;            // << apilar vertical
-                b.Height = 44;
-                b.Width = PanelLateral.ClientSize.Width - PanelLateral.Padding.Left - PanelLateral.Padding.Right;
-
-                b.FlatStyle = FlatStyle.Flat;
-                b.FlatAppearance.BorderSize = 0;
-                b.BackColor = Color.Transparent;
-                b.ForeColor = Color.White;
-                b.FlatAppearance.MouseOverBackColor = Color.FromArgb(61, 70, 82); // #3D4652
-                b.FlatAppearance.MouseDownBackColor = Color.FromArgb(53, 61, 71); // #353D47
-
-                b.ImageAlign = ContentAlignment.MiddleLeft;
-                b.TextAlign = ContentAlignment.MiddleLeft;
-                b.TextImageRelation = TextImageRelation.ImageBeforeText;
-                b.Padding = new Padding(10, 0, 10, 0);
-
-                // separador entre botones
-                var spacer = new Panel
-                {
-                    Dock = DockStyle.Top,
-                    Height = 8,
-                    Margin = new Padding(0),   // ← importante
-                    Padding = new Padding(0)
-                };
-                PanelLateral.Controls.Add(spacer);
-                b.BringToFront(); // el botón arriba del separador
 
 
-            }
-
-            PanelLateral.ResumeLayout();
-        }
 
         private void PanelLateral_Resize(object sender, EventArgs e)
         {
@@ -406,9 +343,153 @@ namespace POS_CHITOS
 
         private void B_Ventas_Click(object sender, EventArgs e)
         {
-            //// Abrir el formulario de ventas
-            //openChildForm(new V_MenuVentas(_usuarioActual, CreateContext()));
+            // Abrir el formulario de ventas
+            openChildForm(new V_MenuVentas(_usuarioActual.Id, CreateContext()));
 
+        }
+
+        private void B_Clientes_Click(object sender, EventArgs e)
+        {
+            openChildForm(new V_MenuClientes(CreateContext()));
+        }
+
+        // 1.a  En la clase (top)
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                var cp = base.CreateParams;
+                cp.ExStyle |= 0x02000000; // WS_EX_COMPOSITED -> compone todo el form
+                return cp;
+            }
+        }
+
+
+
+        static void EnableDoubleBuffer(Control c)
+        {
+            if (SystemInformation.TerminalServerSession) return;
+
+            // DoubleBuffered = true
+            typeof(Control)
+                .GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance)?
+                .SetValue(c, true, null);
+
+            // ResizeRedraw = true  (también es protected)
+            typeof(Control)
+                .GetProperty("ResizeRedraw", BindingFlags.NonPublic | BindingFlags.Instance)?
+                .SetValue(c, true, null);
+
+            // Opcional: SetStyle(UserPaint|AllPaintingInWmPaint|OptimizedDoubleBuffer, true)
+            typeof(Control)
+                .GetMethod("SetStyle", BindingFlags.NonPublic | BindingFlags.Instance)?
+                .Invoke(c, new object[] {
+            ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer,
+            true
+                });
+
+            foreach (Control child in c.Controls)
+                EnableDoubleBuffer(child);
+        }
+        void SetMeta(Button b, string nombre, string atajo)
+        {
+            b.Tag = nombre;                    // nombre para mostrar
+            b.AccessibleDescription = atajo;   // texto del atajo
+        }
+
+        private void WireSidebarToasts()
+        {
+            foreach (var b in PanelLateral.Controls.OfType<Button>())
+            {
+                b.MouseEnter -= PanelLateral_MouseEnter;
+                b.MouseLeave -= PanelLateral_MouseLeave;
+
+                b.MouseEnter += PanelLateral_MouseEnter;
+                b.MouseLeave += PanelLateral_MouseLeave;
+            }
+        }
+
+
+
+        private void ShowToastSidebar(Control anchor, string nombre, string atajo)
+        {
+            // cierra el anterior (si existiera)
+            try
+            {
+                if (_toastActual != null && !_toastActual.IsDisposed)
+                    _toastActual.Close();
+            }
+            catch { /* ignore */ }
+            finally { _toastActual = null; }
+
+            string text = string.IsNullOrWhiteSpace(atajo) ? nombre : $"{nombre}  ·  {atajo}";
+            var t = new Toast(text, ToastType.Info, 1200);
+
+            // --- Fit al contenido, tolerante a nulos ---
+            var lbl = t.Controls.OfType<Label>().FirstOrDefault();
+            var font = lbl?.Font ?? this.Font;
+            int padL = lbl?.Padding.Left ?? 14;
+            int padR = lbl?.Padding.Right ?? 14;
+
+            int textW = TextRenderer.MeasureText(text, font).Width;
+            int w = textW + padL + padR + 10;
+            int minW = 140, maxW = 360;
+            w = Math.Min(maxW, Math.Max(minW, w));
+            t.Size = new Size(w, t.Height);
+
+            // --- Tema oscuro + franja ámbar ---
+            t.BackColor = Color.FromArgb(53, 61, 71);  // #353D47
+            if (lbl != null) lbl.ForeColor = Color.White;
+
+            var stripe = new Panel { Dock = DockStyle.Left, Width = 4, BackColor = Color.FromArgb(240, 180, 41) }; // #F0B429
+            t.Controls.Add(stripe);
+            stripe.BringToFront();
+
+            // --- Posicionamiento robusto ---
+            var owner = anchor?.FindForm();
+            var screen = (owner != null) ? Screen.FromControl(owner) : Screen.FromControl(anchor);
+            Rectangle work = screen.WorkingArea;
+
+            var r = anchor.RectangleToScreen(anchor.ClientRectangle);
+            int x = r.Right + 10;
+            int y = r.Top + (r.Height - t.Height) / 2;
+
+            if (x + t.Width > work.Right) x = r.Left - 10 - t.Width;
+            y = Math.Max(work.Top + 8, Math.Min(y, work.Bottom - 8 - t.Height));
+
+            t.Location = new Point(x, y);
+            _toastActual = t;
+            t.FormClosed += (_, __) => { _toastActual = null; }; // por si se cierra solo
+
+            t.Show(owner);
+        }
+
+
+        private void HideToastSidebar()
+        {
+            try
+            {
+                if (_toastActual != null && !_toastActual.IsDisposed)
+                    _toastActual.Close(); // ahora el timer ya no dará guerra
+            }
+            catch { }
+            finally { _toastActual = null; }
+        }
+
+
+        private void PanelLateral_MouseEnter(object sender, EventArgs e)
+        {
+            if (sender is not Button b) return;      // ← evita el cast inválido
+           
+            string nombre = b.Tag as string ?? b.Text;
+            string atajo = b.AccessibleDescription;
+            ShowToastSidebar(b, nombre, atajo);   // SOLO este
+        }
+
+        private void PanelLateral_MouseLeave(object sender, EventArgs e)
+        {
+
+            if (sender is Button) HideToastSidebar(); // opcional, o simplemente HideToastSidebar();
         }
     }
 }
