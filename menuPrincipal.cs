@@ -18,12 +18,9 @@ namespace POS_CHITOS
         private readonly CortesService _cortesService;
         private Toast _toastActual;
 
-        // --- Sidebar state/animación ---
-        bool sideExpanded = false;
+
         int SIDE_W_COLLAPSED = 72;      // colapsado
-        int SIDE_W_EXPANDED = 260;     // expandido
-        int SIDE_STEP = 12;      // px por tick
-        int SIDE_TEXT_LIMIT = 140;     // desde aquí ya muestro texto
+
 
         System.Windows.Forms.Timer sideTimer;
         int sideTargetWidth;
@@ -94,7 +91,7 @@ namespace POS_CHITOS
             PanelLateral.Padding = new Padding(0, 12, 0, 12);
 
             PanelLateral.BackColor = Color.FromArgb(31, 79, 120);  // #1F4F78
-            PanelLateral.AutoScroll = true;
+
 
             // Configura TODOS los botones ya existentes del lateral (apilar + estilos)
             ConfigurarBotonesLateral(PanelLateral);
@@ -480,7 +477,7 @@ namespace POS_CHITOS
         private void PanelLateral_MouseEnter(object sender, EventArgs e)
         {
             if (sender is not Button b) return;      // ← evita el cast inválido
-           
+
             string nombre = b.Tag as string ?? b.Text;
             string atajo = b.AccessibleDescription;
             ShowToastSidebar(b, nombre, atajo);   // SOLO este
@@ -490,6 +487,51 @@ namespace POS_CHITOS
         {
 
             if (sender is Button) HideToastSidebar(); // opcional, o simplemente HideToastSidebar();
+        }
+
+        private void B_Compras_Click(object sender, EventArgs e)
+        {
+            openChildForm(new V_MenuCompras(_usuarioActual.Id, CreateContext()));
+        }
+
+        private void B_Inventario_Click(object sender, EventArgs e)
+        {
+            openChildForm(new V_menuInventario(_usuarioActual.Id, CreateContext()));
+        }
+
+        private void B_Ingresos_Click(object sender, EventArgs e)
+        {
+            openChildForm(new V_menuEntradasEfectivo(_usuarioActual.Id, CreateContext()));
+        }
+
+        private void B_Egresos_Click(object sender, EventArgs e)
+        {
+            openChildForm(new V_MenuSalidasEfectivo(_usuarioActual.Id, CreateContext()));
+        }
+
+        private void B_Proveedores_Click(object sender, EventArgs e)
+        {
+            openChildForm(new V_menuProveedor(_usuarioActual.Id, CreateContext()));
+        }
+
+        private void B_Caja_Click(object sender, EventArgs e)
+        {
+            openChildForm(new V_MenuCortesCaja(_usuarioActual.Id, CreateContext()));
+        }
+
+        private void B_Reportes_Click(object sender, EventArgs e)
+        {
+            openChildForm(new V_MenuReportes());
+        }
+
+        private void B_Usuarios_Click(object sender, EventArgs e)
+        {
+            openChildForm(new V_menuUsuarios(CreateContext()));
+        }
+
+        private void btnNuevaVenta_Click(object sender, EventArgs e)
+        {
+            openChildForm(new V_CreateVenta(_usuarioActual.Id));
         }
     }
 }

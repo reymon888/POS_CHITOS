@@ -110,6 +110,7 @@
             btnNuevaVenta.Text = "Nueva Venta (F12)";
             btnNuevaVenta.TextImageRelation = TextImageRelation.ImageBeforeText;
             btnNuevaVenta.UseVisualStyleBackColor = false;
+            btnNuevaVenta.Click += btnNuevaVenta_Click;
             // 
             // panel1
             // 
@@ -242,6 +243,7 @@
             B_Compras.TabStop = false;
             B_Compras.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Compras.UseVisualStyleBackColor = false;
+            B_Compras.Click += B_Compras_Click;
             // 
             // B_Inventario
             // 
@@ -260,6 +262,7 @@
             B_Inventario.TabStop = false;
             B_Inventario.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Inventario.UseVisualStyleBackColor = true;
+            B_Inventario.Click += B_Inventario_Click;
             // 
             // B_Ingresos
             // 
@@ -278,6 +281,7 @@
             B_Ingresos.TabStop = false;
             B_Ingresos.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Ingresos.UseVisualStyleBackColor = true;
+            B_Ingresos.Click += B_Ingresos_Click;
             // 
             // B_Egresos
             // 
@@ -296,6 +300,7 @@
             B_Egresos.TabStop = false;
             B_Egresos.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Egresos.UseVisualStyleBackColor = true;
+            B_Egresos.Click += B_Egresos_Click;
             // 
             // B_Clientes
             // 
@@ -333,6 +338,7 @@
             B_Proveedores.TabStop = false;
             B_Proveedores.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Proveedores.UseVisualStyleBackColor = true;
+            B_Proveedores.Click += B_Proveedores_Click;
             // 
             // B_Caja
             // 
@@ -351,6 +357,7 @@
             B_Caja.TabStop = false;
             B_Caja.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Caja.UseVisualStyleBackColor = true;
+            B_Caja.Click += B_Caja_Click;
             // 
             // B_Reportes
             // 
@@ -369,6 +376,7 @@
             B_Reportes.TabStop = false;
             B_Reportes.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Reportes.UseVisualStyleBackColor = true;
+            B_Reportes.Click += B_Reportes_Click;
             // 
             // B_Usuarios
             // 
@@ -387,6 +395,7 @@
             B_Usuarios.TabStop = false;
             B_Usuarios.TextImageRelation = TextImageRelation.ImageAboveText;
             B_Usuarios.UseVisualStyleBackColor = true;
+            B_Usuarios.Click += B_Usuarios_Click;
             // 
             // pictureBox3
             // 

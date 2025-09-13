@@ -126,7 +126,7 @@
             B_ActualizarTabla.Font = new Font("Segoe UI", 10.2F);
             B_ActualizarTabla.ForeColor = Color.FromArgb(44, 140, 153);
             B_ActualizarTabla.Image = Properties.Resources.recargar;
-            B_ActualizarTabla.Location = new Point(1334, 0);
+            B_ActualizarTabla.Location = new Point(1310, 0);
             B_ActualizarTabla.Margin = new Padding(4);
             B_ActualizarTabla.Name = "B_ActualizarTabla";
             B_ActualizarTabla.Size = new Size(126, 175);
@@ -157,7 +157,7 @@
             B_Agregar.Font = new Font("Segoe UI", 10.2F);
             B_Agregar.ForeColor = Color.FromArgb(44, 140, 153);
             B_Agregar.Image = Properties.Resources.agregar_contacto__2_;
-            B_Agregar.Location = new Point(1460, 0);
+            B_Agregar.Location = new Point(1436, 0);
             B_Agregar.Margin = new Padding(4);
             B_Agregar.Name = "B_Agregar";
             B_Agregar.Size = new Size(126, 175);
@@ -177,7 +177,7 @@
             B_Modificar.Font = new Font("Segoe UI", 10.2F);
             B_Modificar.ForeColor = Color.FromArgb(44, 140, 153);
             B_Modificar.Image = Properties.Resources.circulo;
-            B_Modificar.Location = new Point(1586, 0);
+            B_Modificar.Location = new Point(1562, 0);
             B_Modificar.Margin = new Padding(4);
             B_Modificar.Name = "B_Modificar";
             B_Modificar.Size = new Size(126, 175);
@@ -197,10 +197,10 @@
             B_Estado.Font = new Font("Segoe UI", 10.2F);
             B_Estado.ForeColor = Color.FromArgb(44, 140, 153);
             B_Estado.Image = Properties.Resources.semaforo;
-            B_Estado.Location = new Point(1712, 0);
+            B_Estado.Location = new Point(1688, 0);
             B_Estado.Margin = new Padding(4);
             B_Estado.Name = "B_Estado";
-            B_Estado.Size = new Size(119, 175);
+            B_Estado.Size = new Size(143, 175);
             B_Estado.TabIndex = 1;
             B_Estado.Text = "Cambiar Estado (Ctrl + B)";
             B_Estado.TextImageRelation = TextImageRelation.ImageAboveText;
