@@ -231,6 +231,15 @@ namespace POS_CHITOS
                                .Sum(c => c.MontoInicio + c.TotalVentas + c.TotalEntradas - c.TotalCompras - c.TotalSalidas);
             }
         }
+        public bool ExisteMontoInicialHoy(int idUsuario)
+        {
+            // Ejemplo: valida si hay un corte abierto con monto inicial del día
+            var hoy = DateTime.Today;
+            return _context.CortesCaja
+                           .Any(c => c.IdUsuario == idUsuario && c.EstadoCorte == "No Realizado" && c.Fecha.Date == hoy && c.MontoInicio > 0) ;
+
+        }
+
     }
 }
 

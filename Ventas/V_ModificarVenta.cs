@@ -16,18 +16,27 @@ namespace POS_CHITOS
     public partial class V_ModificarVenta : Form
     {
         private readonly VentasService _ventasService;
-        private readonly int _folioVenta;
         private readonly inventarioService _inventarioService;
-        public V_ModificarVenta(int folioVenta, POSContext context)
+        private readonly CortesService _cortesService;
+
+        private readonly int _folioVenta;
+        private readonly int _idUsuario;
+        public V_ModificarVenta(int folioVenta, int idUsuario, POSContext context)
         {
             InitializeComponent();
             _folioVenta = folioVenta;
+            _idUsuario = idUsuario;
+
             _ventasService = new VentasService(context);
             _inventarioService = new inventarioService(context);
+            _cortesService = new CortesService(context);
 
             ConfigurarAutoCompleteProducto();
             CargarVentaExistente();
             ConfigurarEstiloTabla();
+
+            var venta = _ventasService.ObtenerVentaPorFolio(_folioVenta);
+            TB_Placa.Text = venta?.PlacaCarro ?? "";
         }
 
         private void ConfigurarAutoCompleteProducto()
@@ -42,7 +51,11 @@ namespace POS_CHITOS
             TB_Producto.AutoCompleteSource = AutoCompleteSource.CustomSource;
         }
 
-
+        private void GuardarPlaca()
+        {
+            var placa = (TB_Placa.Text ?? "").Trim().ToUpperInvariant();
+            _ventasService.ActualizarPlaca(_folioVenta, placa);
+        }
 
         private void ModificarCantidadProducto(DetalleVentaDTO detalleSeleccionado)
         {
@@ -206,46 +219,94 @@ namespace POS_CHITOS
             }
         }
 
+
         private void B_AgregarVenta_Click(object sender, EventArgs e)
         {
             try
             {
-                var detallesVentaDTO = (List<DetalleVentaDTO>)DGV_DetallesVenta.DataSource;
-
-                if (detallesVentaDTO == null || detallesVentaDTO.Count == 0)
+                var detallesDTO = (List<DetalleVentaDTO>)DGV_DetallesVenta.DataSource ?? new();
+                if (detallesDTO.Count == 0)
                 {
-                    MessageBox.Show("No se pueden modificar ventas sin productos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("No se pueden modificar ventas sin productos.", "Error",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                // Convertir List<DetalleVentaDTO> a List<DetalleVenta>
-                List<DetalleVenta> detallesVenta = detallesVentaDTO.Select(d => new DetalleVenta
+                // Venta actual (para saber su estado)
+                var ventaActual = _ventasService.ObtenerVentaPorFolio(_folioVenta);
+                if (ventaActual == null)
+                {
+                    MessageBox.Show("La venta no existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Mapeo DTO -> entidad
+                var detalles = detallesDTO.Select(d => new DetalleVenta
                 {
                     CodigoProducto = d.CodigoProducto,
                     Cantidad = d.Cantidad,
                     PrecioUnitario = d.PrecioUnitario,
                     DescripcionProducto = d.CodigoProducto == "0"
-                        ? d.DescripcionProducto // Usar la descripción ingresada para productos varios
-                        : _inventarioService.ObtenerProductoPorCodigo(d.CodigoProducto)?.DescripcionProducto ?? "Sin Descripción", // Para productos normales, obtener del servicio
-                    FolioVenta = _folioVenta // Usar el folio de la venta existente
+                        ? d.DescripcionProducto
+                        : _inventarioService.ObtenerProductoPorCodigo(d.CodigoProducto)?.DescripcionProducto ?? "Sin Descripción",
+                    FolioVenta = _folioVenta
                 }).ToList();
 
-                // Obtener el total de la venta
-                float totalVenta = detallesVenta.Sum(d => d.Cantidad * d.PrecioUnitario);
+                // Guarda placa siempre
+                var placa = (TB_Placa.Text ?? "").Trim().ToUpperInvariant();
+                _ventasService.ActualizarPlaca(_folioVenta, placa);
 
-                // Mostrar la ventana para recibir el pago
+                // --- Caso 1: En espera -> cobrar y reanudar ---
+                if (ventaActual.Estado == "EnEspera")
+                {
+                    // Persistimos detalles (pago/cambio 0) antes de cobrar
+                    _ventasService.ModificarVenta(_folioVenta, detalles, 0f, 0f);
+
+                    // Necesitamos corte vigente
+                    var corte = _cortesService.ObtenerCorteNoRealizado(_idUsuario);
+                    if (corte == null)
+                    {
+                        CustomMessageBox.Show("No hay corte de caja activo.", "Aviso");
+                        return;
+                    }
+
+                    // Cobro
+                    float total = detalles.Sum(d => d.Cantidad * d.PrecioUnitario);
+                    using var cobrar = new V_RecibirPagoVenta(total);
+                    if (cobrar.ShowDialog() != DialogResult.OK) return;
+
+                    // Reanudar = Realizada + IdCorte + Fecha=Now + pago/cambio/placa
+                    _ventasService.ReanudarVentaDesdeEspera(
+                        _folioVenta,
+                        _idUsuario,
+                        corte.IdCorte,
+                        cobrar.PagoRecibido,
+                        cobrar.Cambio,
+                        placa
+                    );
+
+                    MessageBox.Show("Venta realizada correctamente.", "Éxito",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                    return;
+                }
+
+                // --- Caso 2: Ya realizada -> solo modificar (tu flujo) ---
+                float totalVenta = detalles.Sum(d => d.Cantidad * d.PrecioUnitario);
                 using (var recibirPago = new V_RecibirPagoVenta(totalVenta))
                 {
                     if (recibirPago.ShowDialog() == DialogResult.OK)
                     {
-                        // Obtener los valores del pago recibido y el cambio
-                        float pagoRecibido = recibirPago.PagoRecibido;
-                        float cambio = recibirPago.Cambio;
+                        _ventasService.ModificarVenta(
+                            _folioVenta,
+                            detalles,
+                            recibirPago.PagoRecibido,
+                            recibirPago.Cambio
+                        );
 
-                        // Llamar al método de modificación en el servicio de ventas con los nuevos parámetros
-                        _ventasService.ModificarVenta(_folioVenta, detallesVenta, pagoRecibido, cambio);
-
-                        MessageBox.Show("Venta modificada correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Venta modificada correctamente.", "Éxito",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                         this.DialogResult = DialogResult.OK;
                         this.Close();
                     }
@@ -253,7 +314,8 @@ namespace POS_CHITOS
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar los cambios de la venta: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al guardar los cambios de la venta: {ex.Message}",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -450,7 +512,7 @@ namespace POS_CHITOS
                 {
                     // Mostrar mensaje de que el producto ya está en la lista
                     CustomMessageBox.Show("El producto ya se encuentra en la lista de detalles de venta.", "Producto Duplicado");
-               
+
                     return;
                 }
 
@@ -477,6 +539,41 @@ namespace POS_CHITOS
                 }
             }
         }
+
+        private void B_EnEspera_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                GuardarPlaca();
+
+                // si ya estaba EnEspera, solo guardas cambios de detalles:
+                // tu _ventasService.ModificarVenta(...) ya recalcula total y actualiza detalles
+                var detallesDTO = (List<DetalleVentaDTO>)DGV_DetallesVenta.DataSource;
+                var detalles = detallesDTO.Select(d => new DetalleVenta
+                {
+                    CodigoProducto = d.CodigoProducto,
+                    Cantidad = d.Cantidad,
+                    PrecioUnitario = d.PrecioUnitario,
+                    DescripcionProducto = d.CodigoProducto == "0" ? d.DescripcionProducto
+                        : _inventarioService.ObtenerProductoPorCodigo(d.CodigoProducto)?.DescripcionProducto ?? "Sin Descripción",
+                    FolioVenta = _folioVenta
+                }).ToList();
+
+                // pago y cambio en 0 si está en espera
+                _ventasService.ModificarVenta(_folioVenta, detalles, 0f, 0f);
+
+                // Asegurar estado/IdCorte coherentes:
+                _ventasService.ForzarEnEspera(_folioVenta); // método simple que pone Estado="EnEspera" y IdCorte=null
+
+                CustomMessageBox.Show("Venta guardada en espera.", "OK");
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+            catch (Exception ex)
+            {
+                CustomMessageBox.Show($"Error: {ex.Message}", "En espera");
+            }
         }
     }
+}
 

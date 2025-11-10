@@ -383,6 +383,16 @@ namespace POS_CHITOS.Properties {
         /// <summary>
         ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap esperando {
+            get {
+                object obj = ResourceManager.GetObject("esperando", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap etiqueta {
             get {
                 object obj = ResourceManager.GetObject("etiqueta", resourceCulture);
@@ -586,6 +596,16 @@ namespace POS_CHITOS.Properties {
         internal static System.Drawing.Bitmap person_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24 {
             get {
                 object obj = ResourceManager.GetObject("person_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Busca un recurso adaptado de tipo System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap placa {
+            get {
+                object obj = ResourceManager.GetObject("placa", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

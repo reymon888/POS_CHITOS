@@ -36,27 +36,35 @@ namespace POS_CHITOS
         {
             try
             {
-                float montoInicial = float.Parse(TB_MontoInicial.Text);
-
-                // Verificar si ya existe un corte abierto para este usuario
-                var corteVigente = _cortesService.ObtenerCorteNoRealizado(_idUsuario);
-
-                if (corteVigente != null)
+                // Mejor usa decimal para dinero y TryParse con cultura
+                if (!decimal.TryParse(TB_MontoInicial.Text,
+                                      System.Globalization.NumberStyles.Number,
+                                      System.Globalization.CultureInfo.CurrentCulture,
+                                      out var montoInicial))
                 {
-                    MessageBox.Show("Ya tienes un corte abierto. No se puede crear un nuevo corte hasta que cierres el actual.", "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Monto inválido.", "Aviso",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
-                // Crear el nuevo corte
-                _cortesService.CrearCorteNuevo(_idUsuario, montoInicial);
+                var corteVigente = _cortesService.ObtenerCorteNoRealizado(_idUsuario);
+                if (corteVigente != null)
+                {
+                    MessageBox.Show("Ya tienes un corte abierto.", "Advertencia",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
-                MessageBox.Show("Nuevo corte de caja creado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _cortesService.CrearCorteNuevo(_idUsuario, (float)montoInicial);
 
+                // <<< CLAVE: devolver OK para que Main sepa que ya abrió
+                this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al crear el corte de caja: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error al crear el corte de caja: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

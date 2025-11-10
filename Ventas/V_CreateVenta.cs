@@ -44,8 +44,8 @@ namespace POS_CHITOS
             VerificarSeleccionFila(); // Verificar inicialmente si hay fila seleccionada
 
             // Configurar el DateTimePicker y CheckBox
-           
-           
+
+
         }
 
         // Método para configurar las columnas del DataGridView
@@ -316,6 +316,7 @@ namespace POS_CHITOS
                 DateTime fechaVenta = DateTime.Now;
                 var usuarioLogueado = _usuarioService.ObtenerNombreUsuarioPorId(_idUsuario);
                 var corteVigente = _cortesService.ObtenerCorteNoRealizado(_idUsuario);
+                var placaCarro = TB_Placa.Text.Trim();
 
                 if (corteVigente == null)
                 {
@@ -345,7 +346,7 @@ namespace POS_CHITOS
                         float cambio = recibirPago.Cambio;
 
                         // Registrar la venta
-                        var nuevaVenta = _ventasService.RegistrarVenta(_idUsuario, fechaVenta, detallesVenta, pagoRecibido, cambio, "Realizada", corteVigente.IdCorte);
+                        var nuevaVenta = _ventasService.RegistrarVenta(_idUsuario, fechaVenta, detallesVenta, pagoRecibido, cambio, "Realizada", corteVigente.IdCorte, placaCarro);
                         int folioVenta = nuevaVenta.FolioVenta;
 
                         // Crear el DTO para la venta
@@ -357,7 +358,8 @@ namespace POS_CHITOS
                             NombreUsuario = usuarioLogueado,
                             Estado = "Realizada",
                             PagoRecibido = pagoRecibido,
-                            Cambio = cambio
+                            Cambio = cambio,
+
                         };
 
                         // Generar el ticket solo si el checkbox está marcado
@@ -493,7 +495,7 @@ namespace POS_CHITOS
             }
         }
 
-       
+
 
         private void DGV_DetallesVenta_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -711,7 +713,7 @@ namespace POS_CHITOS
             {
                 CodigoProducto = "0",
                 DescripcionProducto = descripcion,
-                
+
             };
 
             detallesVenta.Add(productoVario);
@@ -764,6 +766,65 @@ namespace POS_CHITOS
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        private void B_EnEspera_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var detallesVentaDTO = (List<DetalleVentaDTO>)DGV_DetallesVenta.DataSource;
+
+                if (detallesVentaDTO == null || detallesVentaDTO.Count == 0)
+                {
+                    MessageBox.Show("No se pueden registrar ventas sin productos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Fecha y corte
+                DateTime fechaVenta = DateTime.Now;
+                var corteVigente = _cortesService.ObtenerCorteNoRealizado(_idUsuario);
+                if (corteVigente == null)
+                {
+                    MessageBox.Show("No hay un corte de caja activo. No se puede poner la venta en espera.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Mapear DTO -> entidad
+                var detalles = detallesVentaDTO.Select(d => new DetalleVenta
+                {
+                    CodigoProducto = d.CodigoProducto,
+                    Cantidad = d.Cantidad,
+                    PrecioUnitario = d.PrecioUnitario,
+                    DescripcionProducto = d.CodigoProducto == "0" ? d.DescripcionProducto : null,
+                    FolioVenta = 0
+                }).ToList();
+
+                // Pago 0, cambio 0; inventario SE DESCUENTA igual que venta normal
+                float pagoRecibido = 0f;
+                float cambio = 0f;
+                var placaCarro = TB_Placa.Text.Trim();
+
+                var venta = _ventasService.RegistrarVenta(
+                    _idUsuario,
+                    fechaVenta,
+                    detalles,
+                    pagoRecibido,
+                    cambio,
+                    "EnEspera",
+                    corteVigente.IdCorte,
+                    placaCarro
+                );
+
+                // Si manejas placa, ya la guardas al registrar (como hicimos antes)
+                // y no generamos ticket en espera
+                MessageBox.Show($"Venta {venta.FolioVenta} guardada EN ESPERA.", "Guardado", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                var detailed = ex.InnerException?.Message ?? "Sin detalles.";
+                MessageBox.Show($"Error al poner en espera: {ex.Message}\nDetalles: {detailed}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

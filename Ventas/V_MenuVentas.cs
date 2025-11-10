@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using POS_CHITOS.Avisos;
 using POS_CHITOS.Usuarios;
+using POS_CHITOS.Utils;
 using POS_CHITOS.Ventas;
 using System;
 using System.Collections.Generic;
@@ -19,12 +20,14 @@ namespace POS_CHITOS
         private readonly VentasService ventasService;
         private List<VentaDTO> _ventas;  // Lista de ventas completa
         private Usuario _usuarioActual;  // Usuario actual
+        private readonly BindingSource _bsVentas = new();
         public V_MenuVentas(int idusuario, POSContext context)
         {
             InitializeComponent();
             ventasService = new VentasService(context);
             _usuarioActual = context.Usuarios.Find(idusuario);
 
+            ConfigurarGridVentas();
             CargarVentas();
 
             // Suscribir eventos de filtros
@@ -51,11 +54,16 @@ namespace POS_CHITOS
                 {
                     // Obtener la venta seleccionada y verificar el estado del corte
                     var ventaSeleccionada = _ventas.FirstOrDefault(v => v.FolioVenta == folioVenta);
-                    if (ventaSeleccionada != null && ventaSeleccionada.EstadoCorte != "Realizado")
+                    // dentro de VerificarPermisosVentaSeleccionada
+                    if (ventaSeleccionada != null)
                     {
-                        B_ModificarVenta.Enabled = true;
-                        B_CancelarVenta.Enabled = true;
+                        bool editable = ventaSeleccionada.Estado == "EnEspera"
+                                        || ventaSeleccionada.EstadoCorte != "Realizado";
+
+                        B_ModificarVenta.Enabled = editable;
+                        B_CancelarVenta.Enabled = editable;  // si así lo quieres
                     }
+
                 }
             }
         }
@@ -64,112 +72,18 @@ namespace POS_CHITOS
 
         public void CargarVentas(List<VentaDTO> ventasFiltradas = null)
         {
-            // Obtener todas las ventas si no se pasa una lista filtrada
             var ventas = ventasFiltradas ?? ventasService.ObtenerVentas();
 
-            // Filtrar ventas solo para el Cajero normal o Cajero principal
             if (_usuarioActual.Rol == "Cajero")
-            {
                 ventas = ventas.Where(v => v.NombreUsuario == _usuarioActual.NombreUsuario).ToList();
-            }
+
+            _ventas = ventas;                 // guarda cache
+            _bsVentas.DataSource = ventas;    // pinta en grid
+
+            // Toast suave para feedback (si tienes Toast util)
+            Toast.Show(this, "Ventas cargadas.", ToastType.Info, 1600, ToastPosition.TopRight);
 
 
-
-
-            // Limpiar el DataSource antes de volver a asignar
-            DGV_Ventas.DataSource = ventas;
-
-            // Temporalmente permitir que las columnas se generen automáticamente
-            DGV_Ventas.AutoGenerateColumns = false; // Deshabilitar generación automática para personalizar
-
-            // Crear columnas personalizadas
-            DGV_Ventas.Columns.Clear(); // Limpiar las columnas existentes para evitar duplicados
-
-            // Columna de FolioVenta
-            DGV_Ventas.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "FolioVenta",
-                HeaderText = "Folio",
-                DataPropertyName = "FolioVenta", // Debe coincidir con la propiedad del DTO
-                Width = 200
-            });
-
-            // Columna de FechaVenta
-            DGV_Ventas.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "FechaVenta",
-                HeaderText = "Fecha",
-                DataPropertyName = "FechaVenta", // Debe coincidir con la propiedad del DTO
-                                                 // La columna toma el tamaño que falta
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
-            });
-
-            // Columna de TotalVenta
-            DGV_Ventas.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "TotalVenta",
-                HeaderText = "Total",
-                DataPropertyName = "TotalVenta", // Debe coincidir con la propiedad del DTO
-                Width = 200,
-                DefaultCellStyle = new DataGridViewCellStyle { Format = "C2" } // Formato moneda
-            });
-
-            // Columna de Usuario
-            DGV_Ventas.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "Usuario",
-                HeaderText = "Usuario",
-                DataPropertyName = "NombreUsuario", // Debe coincidir con la propiedad del DTO
-                Width = 350
-            });
-
-            // Columna de Estado
-            DGV_Ventas.Columns.Add(new DataGridViewTextBoxColumn
-            {
-                Name = "Estado",
-                HeaderText = "Estado",
-                DataPropertyName = "Estado", // Debe coincidir con la propiedad del DTO
-                Width = 300
-            });
-
-            // Asignar el DataSource con las ventas filtradas
-            DGV_Ventas.DataSource = ventas;
-
-            // Personalizar la tabla
-            personalizarTabla();
-        }
-
-        public void personalizarTabla()
-        {
-            // Evitar la selección de encabezados cuando se hace clic en las celdas
-            DGV_Ventas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            DGV_Ventas.RowHeadersVisible = false;
-
-            // Configurar la fuente de las celdas y los encabezados
-            DGV_Ventas.ColumnHeadersDefaultCellStyle.Font = new Font("Arial", 14, FontStyle.Bold);
-            DGV_Ventas.DefaultCellStyle.Font = new Font("Arial", 14);
-            DGV_Ventas.DefaultCellStyle.BackColor = Color.FromArgb(255, 255, 255);
-            DGV_Ventas.DefaultCellStyle.ForeColor = Color.FromArgb(44, 140, 153);
-
-            // Configurar el fondo y el color de texto de los encabezados
-            DGV_Ventas.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(51, 51, 51);
-            DGV_Ventas.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(255, 255, 255);
-            DGV_Ventas.EnableHeadersVisualStyles = false;
-
-            // Alternar colores de las filas
-            DGV_Ventas.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
-            DGV_Ventas.AlternatingRowsDefaultCellStyle.ForeColor = Color.FromArgb(44, 140, 153);
-
-            //Poner el contenido de la tabla en medio
-            DGV_Ventas.RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            DGV_Ventas.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            //Eliminar el contorno de las celdas
-            DGV_Ventas.CellBorderStyle = DataGridViewCellBorderStyle.None;
-            DGV_Ventas.RowHeadersVisible = false;
-
-            // Configuración para que los encabezados no cambien de estilo al seleccionar celdas
-            DGV_Ventas.ColumnHeadersDefaultCellStyle.SelectionBackColor = Color.FromArgb(51, 51, 51); // Fondo gris oscuro
-            DGV_Ventas.ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.FromArgb(255, 255, 255); // Texto blanco
         }
 
         private void B_MostrarDetalles_Click(object sender, EventArgs e)
@@ -232,7 +146,7 @@ namespace POS_CHITOS
                     if (filaSeleccionada.Cells["FolioVenta"].Value != null &&
                         int.TryParse(filaSeleccionada.Cells["FolioVenta"].Value.ToString(), out int folioVenta))
                     {
-                        using (V_ModificarVenta modificarVentaForm = new V_ModificarVenta(folioVenta, new POSContext(new DbContextOptions<POSContext>())))
+                        using (V_ModificarVenta modificarVentaForm = new V_ModificarVenta(folioVenta, _usuarioActual.Id, new POSContext(new DbContextOptions<POSContext>())))
                         {
                             if (modificarVentaForm.ShowDialog() == DialogResult.OK)
                             {
@@ -257,32 +171,21 @@ namespace POS_CHITOS
         }
         private void AplicarFiltros()
         {
-            // Verificar si la lista _ventas está inicializada
             if (_ventas == null)
-            {
                 _ventas = ventasService.ObtenerVentas();
-            }
 
-            string filtro = TB_BuscarVenta.Text.ToLower();
+            var f = (TB_BuscarVenta.Text ?? "").Trim().ToLowerInvariant();
 
-            // Filtrar las ventas por Folio y Usuario
-            try
-            {
-                var ventasFiltradas = _ventas
-                    .Where(v =>
-                        (v.FolioVenta != null && v.FolioVenta.ToString().Contains(filtro)) ||  // Verificar que FolioVenta no sea null
-                        (!string.IsNullOrEmpty(v.Usuario) && v.Usuario.ToLower().Contains(filtro))  // Filtrar por Usuario si no es null
-                    )
-                    .ToList();
+            var ventasFiltradas = _ventas.Where(v =>
+                v.FolioVenta.ToString().Contains(f) ||
+                (!string.IsNullOrEmpty(v.NombreUsuario) && v.NombreUsuario.ToLower().Contains(f)) ||
+                (!string.IsNullOrEmpty(v.Usuario) && v.Usuario.ToLower().Contains(f)) || // por si usas esta propiedad en algún lugar
+                (!string.IsNullOrEmpty(v.PlacaCarro) && v.PlacaCarro.ToLower().Contains(f))
+            ).ToList();
 
-                // Actualizar la tabla con las ventas filtradas
-                CargarVentas(ventasFiltradas);
-            }
-            catch (Exception ex)
-            {
-                CustomMessageBox.Show($"Error: {ex.Message}", "Error al filtrar ventas");
-            }
+            CargarVentas(ventasFiltradas);
         }
+
 
 
         private void B_BuscarPorFecha_Click(object sender, EventArgs e)
@@ -452,6 +355,114 @@ namespace POS_CHITOS
             }
             return base.ProcessCmdKey(ref msg, keyData);
         }
+
+        private void ConfigurarGridVentas()
+        {
+            DGV_Ventas.AutoGenerateColumns = false;
+            DGV_Ventas.MultiSelect = false;
+            DGV_Ventas.RowHeadersVisible = false;
+            DGV_Ventas.AllowUserToAddRows = false;
+            DGV_Ventas.AllowUserToResizeRows = false;
+            DGV_Ventas.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            DGV_Ventas.AllowUserToResizeColumns = true;
+            DGV_Ventas.Columns.Clear();
+
+            DGV_Ventas.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "FolioVenta",
+                HeaderText = "Folio",
+                DataPropertyName = "FolioVenta",
+                FillWeight = 10,
+                MinimumWidth = 90
+            });
+
+            DGV_Ventas.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "FechaVenta",
+                HeaderText = "Fecha",
+                DataPropertyName = "FechaVenta",
+                FillWeight = 16,
+                DefaultCellStyle = { Format = "g" } // fecha+hora corta
+            });
+
+            // <-- NUEVA COLUMNA Placa
+            DGV_Ventas.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "PlacaCarro",
+                HeaderText = "Placa",
+                DataPropertyName = "PlacaCarro",
+                FillWeight = 14,
+                MinimumWidth = 110
+            });
+
+            DGV_Ventas.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "NombreUsuario",
+                HeaderText = "Usuario",
+                DataPropertyName = "NombreUsuario",
+                FillWeight = 18,
+                MinimumWidth = 140
+            });
+
+            DGV_Ventas.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "TotalVenta",
+                HeaderText = "Total",
+                DataPropertyName = "TotalVenta",
+                FillWeight = 14,
+                DefaultCellStyle = { Format = "C2" }
+            });
+
+            DGV_Ventas.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Estado",
+                HeaderText = "Estado",
+                DataPropertyName = "Estado",
+                FillWeight = 12
+            });
+
+            // Tema como en clientes (usa tus extensiones)
+            DGV_Ventas.ApplyTheme(compacto: true);
+            DGV_Ventas.Center("FolioVenta", "Estado", "PlacaCarro");
+            DGV_Ventas.FormatCurrency("TotalVenta");
+            DGV_Ventas.PillByValue("Estado", good: "Realizada", bad: "Cancelada");
+
+            // Mostrar placa en MAYÚSCULAS de forma visual
+            DGV_Ventas.CellFormatting += (s, e) =>
+            {
+                if (e.RowIndex < 0) return;
+                if (DGV_Ventas.Columns[e.ColumnIndex].DataPropertyName == "PlacaCarro"
+                    && e.Value is string p && !string.IsNullOrWhiteSpace(p))
+                    e.Value = p.ToUpperInvariant();
+
+                if (e.RowIndex < 0) return;
+                var col = DGV_Ventas.Columns[e.ColumnIndex];
+                if (col.DataPropertyName != "Estado") return;
+
+                var val = e.Value as string;
+                var cell = DGV_Ventas.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                if (val == "Realizada")
+                {
+                    cell.Style.BackColor = Color.FromArgb(220, 247, 230);
+                    cell.Style.ForeColor = Color.FromArgb(22, 115, 71);
+                }
+                else if (val == "Cancelada")
+                {
+                    cell.Style.BackColor = Color.FromArgb(253, 229, 222);
+                    cell.Style.ForeColor = Color.FromArgb(160, 29, 19);
+                }
+                else if (val == "EnEspera")
+                {
+                    cell.Style.BackColor = Color.FromArgb(255, 248, 220); // ámbar suave
+                    cell.Style.ForeColor = Color.FromArgb(142, 90, 0);
+                }
+            };
+
+            // Enlaza el BS
+            DGV_Ventas.DataSource = _bsVentas;
+        }
     }
+
 }
 

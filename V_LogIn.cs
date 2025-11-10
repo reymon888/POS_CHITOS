@@ -45,41 +45,56 @@ namespace POS_CHITOS
 
         private void B_Login_Click(object sender, EventArgs e)
         {
-            string nombreUsuario = TB_Usuario.Text;
-            string contrasena = TB_PW.Text;
-
-            // Hashear la contraseña
-            string contrasenaHasheada = BitConverter.ToString(SHA256.Create().ComputeHash(System.Text.Encoding.UTF8.GetBytes(contrasena))).Replace("-", "");
-
-            using (var context = new POSContext(new DbContextOptions<POSContext>()))
+            try
             {
-                // Crear instancia de los servicios
+                string nombreUsuario = TB_Usuario.Text.Trim();
+                string contrasena = TB_PW.Text;
+
+                // Hash SHA-256
+                string contrasenaHasheada;
+                using (var sha = System.Security.Cryptography.SHA256.Create())
+                    contrasenaHasheada = BitConverter
+                        .ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(contrasena)))
+                        .Replace("-", "");
+
+                using var context = new POSContext(new DbContextOptions<POSContext>());
                 var loginService = new LoginService(context);
                 var cortesService = new CortesService(context);
 
-                // Autenticar el usuario
+                // 1) Autenticar
                 var usuario = loginService.AutenticarUsuario(nombreUsuario, contrasenaHasheada);
-
-                if (usuario != null)
+                if (usuario is null)
                 {
-                    // Verificar si hay corte pendiente
-                    if (cortesService.ObtenerCorteNoRealizado(usuario.Id) == null)
-                    {
-                        // Si no hay corte, abrir ventana para ingresar monto inicial
-                        var formMontoInicial = new V_MontoInicial(usuario.Id, cortesService);
-                        formMontoInicial.ShowDialog();
-                    }
+                    MessageBox.Show("Usuario o contraseña incorrectos.", "Error de autenticación",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
-                    // Ocultar el formulario de login y abrir el menú principal
-                    this.Hide();
-                    var mainMenu = new menuPrincipal(usuario);
-                    mainMenu.ShowDialog();
-                    this.Close();
-                }
-                else
+                // 2) Decidir si hay que pedir monto inicial
+                bool tieneCorteAbierto = cortesService.ObtenerCorteNoRealizado(usuario.Id) != null;
+                bool tieneMontoHoy = cortesService.ExisteMontoInicialHoy(usuario.Id);
+                bool debePedirMonto = !(tieneCorteAbierto || tieneMontoHoy);
+
+                bool montoInicialOk = true;
+                if (debePedirMonto)
                 {
-                    MessageBox.Show("Usuario o contraseña incorrectos.", "Error de autenticación", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    using var frmMonto = new V_MontoInicial(usuario.Id, cortesService);
+                    montoInicialOk = (frmMonto.ShowDialog(this) == DialogResult.OK);
+                    if (!montoInicialOk) return; // canceló → no abrir menú
                 }
+
+                // 3) Abrir menú marcando el flag de “inicio de caja verificado”
+                bool inicioCajaVerificado = !debePedirMonto || montoInicialOk;
+
+                this.Hide();
+                using var mainMenu = new menuPrincipal(usuario, inicioCajaVerificado);
+                mainMenu.ShowDialog();
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ocurrió un error al iniciar sesión:\n{ex.Message}",
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

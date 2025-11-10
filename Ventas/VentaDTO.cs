@@ -14,6 +14,9 @@
         public string Usuario { get; internal set; }
 
         public string EstadoCorte { get; set; } // Nueva propiedad para el estado del corte
+
+        public string? PlacaCarro { get; set; }
+
     }
 
 }

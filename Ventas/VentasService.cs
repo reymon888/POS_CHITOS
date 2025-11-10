@@ -28,7 +28,7 @@ namespace POS_CHITOS.Ventas
                 })
                 .ToList();
         }
-        public Venta RegistrarVenta(int idUsuario, DateTime FechaVenta, List<DetalleVenta> detalles, float pagoRecibido, float cambio, string estado, int IdCorte)
+        public Venta RegistrarVenta(int idUsuario, DateTime FechaVenta, List<DetalleVenta> detalles, float pagoRecibido, float cambio, string estado, int? IdCorte, string? placaCarro)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -43,7 +43,9 @@ namespace POS_CHITOS.Ventas
                         Cambio = cambio,
                         IdUsuario = idUsuario,
                         Estado = estado,
-                        IdCorte = IdCorte
+                        IdCorte = (estado == "EnEspera") ? null : IdCorte,
+                        PlacaCarro = placaCarro
+                        
                     };
 
                     _context.ventas.Add(nuevaVenta);
@@ -112,7 +114,8 @@ namespace POS_CHITOS.Ventas
                      PagoRecibido = v.PagoRecibido,
                      Cambio = v.Cambio,
                      NombreUsuario = v.Usuario.NombreUsuario,
-                     Estado = v.Estado
+                     Estado = v.Estado,
+                     PlacaCarro = v.PlacaCarro
                  })
                  .ToList();
 
@@ -138,7 +141,8 @@ namespace POS_CHITOS.Ventas
                         PagoRecibido = v.PagoRecibido,
                         Cambio = v.Cambio,
                         NombreUsuario = v.Usuario.NombreUsuario, // Proyecta el nombre del usuario
-                        Estado = v.Estado
+                        Estado = v.Estado,
+                        PlacaCarro = v.PlacaCarro
                     })
                     .ToList();
             }
@@ -156,7 +160,8 @@ namespace POS_CHITOS.Ventas
                         PagoRecibido = v.PagoRecibido,
                         Cambio = v.Cambio,
                         NombreUsuario = v.Usuario.NombreUsuario, // Proyecta el nombre del usuario
-                        Estado = v.Estado
+                        Estado = v.Estado,
+                        PlacaCarro = v.PlacaCarro
                     })
                     .ToList();
             }
@@ -207,6 +212,7 @@ namespace POS_CHITOS.Ventas
                 Cambio = venta.Cambio,
                 NombreUsuario = venta.Usuario?.NombreUsuario ?? "N/A",
                 Estado = venta.Estado,
+                PlacaCarro = venta.PlacaCarro,
                 DetallesVenta = venta.DetallesVenta?.Select(d => new DetalleVentaDTO
                 {
                     CodigoProducto = d.CodigoProducto,
@@ -317,7 +323,8 @@ namespace POS_CHITOS.Ventas
                     PagoRecibido = v.PagoRecibido,
                     Cambio = v.Cambio,
                     NombreUsuario = v.Usuario.NombreUsuario,
-                    Estado = v.Estado
+                    Estado = v.Estado,
+                    PlacaCarro = v.PlacaCarro
                 })
                 .ToList();
 
@@ -338,7 +345,8 @@ namespace POS_CHITOS.Ventas
                               PagoRecibido = venta.PagoRecibido,
                               Cambio = venta.Cambio,
                               Usuario = usuario.NombreUsuario,
-                              Estado = venta.Estado
+                              Estado = venta.Estado,
+                              PlacaCarro = venta.PlacaCarro
                           }).ToList();
 
             return ventas;
@@ -360,7 +368,8 @@ namespace POS_CHITOS.Ventas
                 FechaVenta = v.FechaVenta,
                 TotalVenta = v.TotalVenta,
                 NombreUsuario = v.Usuario.NombreUsuario,
-                Estado = v.Estado
+                Estado = v.Estado,
+                PlacaCarro = v.PlacaCarro
             }).ToList();
         }
 
@@ -381,7 +390,8 @@ namespace POS_CHITOS.Ventas
                 FechaVenta = v.FechaVenta,
                 TotalVenta = v.TotalVenta,
                 NombreUsuario = v.Usuario.NombreUsuario,
-                Estado = v.Estado
+                Estado = v.Estado,
+                PlacaCarro = v.PlacaCarro
             }).ToList();
         }
 
@@ -452,6 +462,53 @@ namespace POS_CHITOS.Ventas
             _context.SaveChanges();
         }
 
+        public void ReanudarVentaDesdeEspera(
+    int folioVenta,
+    int idUsuario,
+    int idCorte,
+    float pagoRecibido,
+    float cambio,
+    string placa
+)
+        {
+            var v = _context.ventas
+                .Include(x => x.DetallesVenta)
+                .FirstOrDefault(x => x.FolioVenta == folioVenta);
+
+            if (v == null) throw new Exception("Venta no encontrada.");
+            if (v.Estado != "EnEspera") throw new Exception("La venta no está en espera.");
+
+            v.Estado = "Realizada";
+            v.FechaVenta = DateTime.Now;   // “la mera mera” cuando se cobra
+            v.PagoRecibido = pagoRecibido;
+            v.Cambio = cambio;
+            v.IdUsuario = idUsuario;       // por si cambió cajero
+            v.IdCorte = idCorte;           // ahora sí ligamos al corte
+            if (!string.IsNullOrWhiteSpace(placa))
+                v.PlacaCarro = placa;
+
+            _context.SaveChanges();
+        }
+
+        public void ActualizarPlaca(int folioVenta, string placa)
+        {
+            var v = _context.ventas.Find(folioVenta);
+            if (v == null) throw new Exception("Venta no encontrada.");
+            v.PlacaCarro = placa;
+            _context.SaveChanges();
+        }
+        // VentasService
+        public void ForzarEnEspera(int folioVenta)
+        {
+            var v = _context.ventas.Find(folioVenta);
+            if (v == null) throw new Exception("Venta no encontrada.");
+            if (v.Estado == "Realizada")
+                throw new Exception("No puedes regresar una venta realizada a EnEspera.");
+
+            v.Estado = "EnEspera";
+            v.IdCorte = null;            // clave
+            _context.SaveChanges();
+        }
 
     }
 }

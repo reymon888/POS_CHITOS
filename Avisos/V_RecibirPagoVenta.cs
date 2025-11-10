@@ -28,50 +28,8 @@ namespace POS_CHITOS
             this.MinimizeBox = false;   // quita minimizar
             this.ControlBox = false;   // quita botón Cerrar y menú del sistema
             this.StartPosition = FormStartPosition.CenterScreen;
-            rb_contado.Checked = true;
-            logicaVenta();
-
-
-
-
         }
-
-
-        void logicaVenta()
-        {
-            // Aqui se trabajara la logica de la venta, tener en cuenta cada parametro si el rb es contado o credito, si es credito se desactivan los parametros de contado y se activa los de credito y viceversa
-            pCredito.Enabled = false;
-            pCredito.Visible = false;
-            pContado.Enabled = true;
-            pContado.Visible = true;
-
-
-            if (rb_contado.Checked)
-            {
-                // Logica para venta al contado, activar el pContado y desactivar el pCredito
-                pContado.Enabled = true;
-                pCredito.Enabled = false;
-                pContado.Visible = true;
-                pCredito.Visible = false;
-
-            }
-            else if (rb_credito.Checked)
-            {
-                // Logica para venta a credito, activar el pCredito y desactivar el pContado
-                pContado.Enabled = false;
-                pCredito.Enabled = true;
-                pContado.Visible = false;
-                pCredito.Visible = true;
-
-
-
-
-            }
-
-
-        }
-
-
+         
 
         private void B_Confirmar_Click(object sender, EventArgs e)
         {
@@ -118,16 +76,6 @@ namespace POS_CHITOS
         private void label1_Click(object sender, EventArgs e)
         {
 
-        }
-
-        private void rb_contado_CheckedChanged(object sender, EventArgs e)
-        {
-            logicaVenta();
-        }
-
-        private void rb_credito_CheckedChanged(object sender, EventArgs e)
-        {
-            logicaVenta();
         }
 
         private void pContado_Paint(object sender, PaintEventArgs e)
