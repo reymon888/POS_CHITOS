@@ -28,7 +28,31 @@ namespace POS_CHITOS.Ventas
                 })
                 .ToList();
         }
-        public Venta RegistrarVenta(int idUsuario, DateTime FechaVenta, List<DetalleVenta> detalles, float pagoRecibido, float cambio, string estado, int? IdCorte, string? placaCarro)
+
+        public List<VentaDTO> BuscarVentasPorFolioHistorial(string folioTexto)
+        {
+            if (string.IsNullOrWhiteSpace(folioTexto))
+                return new List<VentaDTO>();
+
+            return _context.ventas
+                .Where(v => v.FolioVenta.ToString().Contains(folioTexto))
+                .OrderByDescending(v => v.FechaVenta)
+                .Take(50) // Limitar a 50 resultados para rendimiento
+                .Select(v => new VentaDTO
+                {
+                    FolioVenta = v.FolioVenta,
+                    FechaVenta = v.FechaVenta,
+                    TotalVenta = v.TotalVenta,
+                    PagoRecibido = v.PagoRecibido,
+                    Cambio = v.Cambio,
+                    NombreUsuario = v.Usuario.NombreUsuario,
+                    Estado = v.Estado,
+                    PlacaCarro = v.PlacaCarro,
+                    MetodoPago = v.MetodoPago
+                })
+                .ToList();
+        }
+        public Venta RegistrarVenta(int idUsuario, DateTime FechaVenta, List<DetalleVenta> detalles, float pagoRecibido, float cambio, string estado, int? IdCorte, string? placaCarro, string metodoPago)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -44,8 +68,9 @@ namespace POS_CHITOS.Ventas
                         IdUsuario = idUsuario,
                         Estado = estado,
                         IdCorte = (estado == "EnEspera") ? null : IdCorte,
-                        PlacaCarro = placaCarro
-                        
+                        PlacaCarro = placaCarro,
+                        MetodoPago = metodoPago
+
                     };
 
                     _context.ventas.Add(nuevaVenta);
@@ -115,7 +140,8 @@ namespace POS_CHITOS.Ventas
                      Cambio = v.Cambio,
                      NombreUsuario = v.Usuario.NombreUsuario,
                      Estado = v.Estado,
-                     PlacaCarro = v.PlacaCarro
+                     PlacaCarro = v.PlacaCarro,
+                     MetodoPago = v.MetodoPago
                  })
                  .ToList();
 
@@ -227,7 +253,7 @@ namespace POS_CHITOS.Ventas
 
 
 
-        public void ModificarVenta(int folioVenta, List<DetalleVenta> detallesVenta, float pagoRecibido, float cambio)
+        public void ModificarVenta(int folioVenta, List<DetalleVenta> detallesVenta, float pagoRecibido, float cambio, String metodoPago)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
@@ -251,6 +277,7 @@ namespace POS_CHITOS.Ventas
                     // Actualizar el pago recibido y el cambio
                     venta.PagoRecibido = pagoRecibido;
                     venta.Cambio = cambio;
+                    venta.MetodoPago = metodoPago;
 
                     // Eliminar detalles que ya no están en la lista actual
                     var detallesAEliminar = venta.DetallesVenta
@@ -468,7 +495,8 @@ namespace POS_CHITOS.Ventas
     int idCorte,
     float pagoRecibido,
     float cambio,
-    string placa
+    string placa,
+    string metodoPago
 )
         {
             var v = _context.ventas
@@ -484,6 +512,7 @@ namespace POS_CHITOS.Ventas
             v.Cambio = cambio;
             v.IdUsuario = idUsuario;       // por si cambió cajero
             v.IdCorte = idCorte;           // ahora sí ligamos al corte
+            v.MetodoPago = metodoPago;
             if (!string.IsNullOrWhiteSpace(placa))
                 v.PlacaCarro = placa;
 
@@ -508,6 +537,77 @@ namespace POS_CHITOS.Ventas
             v.Estado = "EnEspera";
             v.IdCorte = null;            // clave
             _context.SaveChanges();
+        }
+        public List<VentaDTO> ObtenerVentasEnEspera()
+        {
+            var ventas = _context.ventas
+                .Where(v => v.Estado == "EnEspera")
+                .OrderByDescending(v => v.FechaVenta) // Más recientes primero
+                .Select(v => new VentaDTO
+                {
+                    FolioVenta = v.FolioVenta,
+                    FechaVenta = v.FechaVenta,
+                    TotalVenta = v.TotalVenta,
+                    PagoRecibido = v.PagoRecibido,
+                    Cambio = v.Cambio,
+                    NombreUsuario = v.Usuario.NombreUsuario,
+                    Estado = v.Estado,
+                    PlacaCarro = v.PlacaCarro,
+                    MetodoPago = v.MetodoPago
+                })
+                .ToList();
+
+            return ventas;
+        }
+
+        public List<VentaDTO> ObtenerVentasEnEsperaPorUsuario(int idUsuario)
+        {
+            var usuario = _context.Usuarios.Find(idUsuario);
+
+            if (usuario.Rol == "Superadministrador")
+            {
+                return ObtenerVentasEnEspera(); // Ver todas
+            }
+            else
+            {
+                return _context.ventas
+                    .Where(v => v.Estado == "EnEspera" && v.IdUsuario == idUsuario)
+                    .OrderByDescending(v => v.FechaVenta)
+                    .Select(v => new VentaDTO
+                    {
+                        FolioVenta = v.FolioVenta,
+                        FechaVenta = v.FechaVenta,
+                        TotalVenta = v.TotalVenta,
+                        PagoRecibido = v.PagoRecibido,
+                        Cambio = v.Cambio,
+                        NombreUsuario = v.Usuario.NombreUsuario,
+                        Estado = v.Estado,
+                        PlacaCarro = v.PlacaCarro,
+                        MetodoPago = v.MetodoPago
+                    })
+                    .ToList();
+            }
+        }
+
+        // En VentasService.cs
+        public List<VentaDTO> ObtenerVentasPorPlaca(string placa)
+        {
+            return _context.ventas
+                .Where(v => v.PlacaCarro != null && v.PlacaCarro.ToLower().Contains(placa.ToLower()))
+                .OrderByDescending(v => v.FechaVenta)
+                .Select(v => new VentaDTO
+                {
+                    FolioVenta = v.FolioVenta,
+                    FechaVenta = v.FechaVenta,
+                    TotalVenta = v.TotalVenta,
+                    PagoRecibido = v.PagoRecibido,
+                    Cambio = v.Cambio,
+                    NombreUsuario = v.Usuario.NombreUsuario,
+                    Estado = v.Estado,
+                    PlacaCarro = v.PlacaCarro,
+                    MetodoPago = v.MetodoPago
+                })
+                .ToList();
         }
 
     }

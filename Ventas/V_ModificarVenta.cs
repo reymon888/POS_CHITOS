@@ -1,4 +1,8 @@
-﻿using System;
+﻿using POS_CHITOS.Avisos;
+using POS_CHITOS.Inventario;
+using POS_CHITOS.Utils;
+using POS_CHITOS.Ventas;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,23 +11,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using POS_CHITOS.Avisos;
-using POS_CHITOS.Inventario;
-using POS_CHITOS.Ventas;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ToolTip;
 
 namespace POS_CHITOS
 {
     public partial class V_ModificarVenta : Form
     {
+        private readonly Action<bool>? _onClose; // bool = refrescar listado
         private readonly VentasService _ventasService;
         private readonly inventarioService _inventarioService;
         private readonly CortesService _cortesService;
 
         private readonly int _folioVenta;
         private readonly int _idUsuario;
-        public V_ModificarVenta(int folioVenta, int idUsuario, POSContext context)
+        public V_ModificarVenta(int folioVenta, int idUsuario, POSContext context, Action<bool>? onClose = null)
         {
             InitializeComponent();
+            _onClose = onClose;
             _folioVenta = folioVenta;
             _idUsuario = idUsuario;
 
@@ -37,6 +41,19 @@ namespace POS_CHITOS
 
             var venta = _ventasService.ObtenerVentaPorFolio(_folioVenta);
             TB_Placa.Text = venta?.PlacaCarro ?? "";
+        }
+
+        private void Finalizar(bool refrescar)
+        {
+            if (TopLevel) // modal normal
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+            else // embebida en panel
+            {
+                _onClose?.Invoke(refrescar);
+            }
         }
 
         private void ConfigurarAutoCompleteProducto()
@@ -227,20 +244,17 @@ namespace POS_CHITOS
                 var detallesDTO = (List<DetalleVentaDTO>)DGV_DetallesVenta.DataSource ?? new();
                 if (detallesDTO.Count == 0)
                 {
-                    MessageBox.Show("No se pueden modificar ventas sin productos.", "Error",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    CustomMessageBox.Show("No se pueden modificar ventas sin productos.", "Error");
                     return;
                 }
 
-                // Venta actual (para saber su estado)
                 var ventaActual = _ventasService.ObtenerVentaPorFolio(_folioVenta);
                 if (ventaActual == null)
                 {
-                    MessageBox.Show("La venta no existe.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    CustomMessageBox.Show("La venta no existe.", "Error");
                     return;
                 }
 
-                // Mapeo DTO -> entidad
                 var detalles = detallesDTO.Select(d => new DetalleVenta
                 {
                     CodigoProducto = d.CodigoProducto,
@@ -252,17 +266,14 @@ namespace POS_CHITOS
                     FolioVenta = _folioVenta
                 }).ToList();
 
-                // Guarda placa siempre
                 var placa = (TB_Placa.Text ?? "").Trim().ToUpperInvariant();
                 _ventasService.ActualizarPlaca(_folioVenta, placa);
 
-                // --- Caso 1: En espera -> cobrar y reanudar ---
                 if (ventaActual.Estado == "EnEspera")
                 {
-                    // Persistimos detalles (pago/cambio 0) antes de cobrar
-                    _ventasService.ModificarVenta(_folioVenta, detalles, 0f, 0f);
+                    // 1) Persistimos detalles (pago/cambio 0) temporalmente
+                    _ventasService.ModificarVenta(_folioVenta, detalles, 0f, 0f, "PENDIENTE");
 
-                    // Necesitamos corte vigente
                     var corte = _cortesService.ObtenerCorteNoRealizado(_idUsuario);
                     if (corte == null)
                     {
@@ -270,29 +281,26 @@ namespace POS_CHITOS
                         return;
                     }
 
-                    // Cobro
                     float total = detalles.Sum(d => d.Cantidad * d.PrecioUnitario);
                     using var cobrar = new V_RecibirPagoVenta(total);
                     if (cobrar.ShowDialog() != DialogResult.OK) return;
 
-                    // Reanudar = Realizada + IdCorte + Fecha=Now + pago/cambio/placa
                     _ventasService.ReanudarVentaDesdeEspera(
                         _folioVenta,
                         _idUsuario,
                         corte.IdCorte,
                         cobrar.PagoRecibido,
                         cobrar.Cambio,
-                        placa
+                        placa,
+                        cobrar.MetodoPago
                     );
 
-                    MessageBox.Show("Venta realizada correctamente.", "Éxito",
-                                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.DialogResult = DialogResult.OK;
-                    this.Close();
+                    Toast.Show(this, "Venta reanudada y cobrada ✅", ToastType.Success, 2000, ToastPosition.TopRight);
+                    Finalizar(true);
                     return;
                 }
 
-                // --- Caso 2: Ya realizada -> solo modificar (tu flujo) ---
+                // Ya realizada → solo modificar + actualizar método
                 float totalVenta = detalles.Sum(d => d.Cantidad * d.PrecioUnitario);
                 using (var recibirPago = new V_RecibirPagoVenta(totalVenta))
                 {
@@ -302,20 +310,18 @@ namespace POS_CHITOS
                             _folioVenta,
                             detalles,
                             recibirPago.PagoRecibido,
-                            recibirPago.Cambio
+                            recibirPago.Cambio,
+                            recibirPago.MetodoPago
                         );
 
-                        MessageBox.Show("Venta modificada correctamente.", "Éxito",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        this.DialogResult = DialogResult.OK;
-                        this.Close();
+                        Toast.Show(this, "Venta modificada correctamente ✅", ToastType.Success, 1800, ToastPosition.TopRight);
+                        Finalizar(true);
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error al guardar los cambios de la venta: {ex.Message}",
-                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                CustomMessageBox.Show($"Error al guardar los cambios de la venta: {ex.Message}", "Error");
             }
         }
 
@@ -560,7 +566,7 @@ namespace POS_CHITOS
                 }).ToList();
 
                 // pago y cambio en 0 si está en espera
-                _ventasService.ModificarVenta(_folioVenta, detalles, 0f, 0f);
+                _ventasService.ModificarVenta(_folioVenta, detalles, 0f, 0f, "PENDIENTE");
 
                 // Asegurar estado/IdCorte coherentes:
                 _ventasService.ForzarEnEspera(_folioVenta); // método simple que pone Estado="EnEspera" y IdCorte=null
@@ -574,6 +580,10 @@ namespace POS_CHITOS
                 CustomMessageBox.Show($"Error: {ex.Message}", "En espera");
             }
         }
+
+
+        private void B_CancelarVenta_Click(object sender, EventArgs e)
+       => Finalizar(false);
     }
 }
 

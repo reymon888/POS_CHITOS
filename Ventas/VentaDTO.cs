@@ -17,6 +17,8 @@
 
         public string? PlacaCarro { get; set; }
 
+        public string MetodoPago { get; set; } // ENUM en DB
+
     }
 
 }

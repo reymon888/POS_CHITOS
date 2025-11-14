@@ -20,9 +20,6 @@ namespace POS_CHITOS.Ventas
         [Column("MetodoPago")]
         public string MetodoPago { get; set; } = "EFECTIVO"; // ENUM en DB
 
-        [Column("ReferenciaPago")]
-        public string? ReferenciaPago { get; set; }
-
         [Column("PagoRecibido")]
         public float PagoRecibido { get; set; } = 0f;
 

@@ -106,6 +106,7 @@
             B_CancelarVenta.Text = "Cancelar (Esc)";
             B_CancelarVenta.TextImageRelation = TextImageRelation.ImageAboveText;
             B_CancelarVenta.UseVisualStyleBackColor = false;
+            B_CancelarVenta.Click += B_CancelarVenta_Click;
             // 
             // B_AgregarVenta
             // 

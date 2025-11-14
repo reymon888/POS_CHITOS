@@ -344,9 +344,10 @@ namespace POS_CHITOS
                     {
                         float pagoRecibido = recibirPago.PagoRecibido;
                         float cambio = recibirPago.Cambio;
+                        string metodoPago = recibirPago.MetodoPago; // "EFECTIVO", "TARJETA", "TRANSFERENCIA"
 
                         // Registrar la venta
-                        var nuevaVenta = _ventasService.RegistrarVenta(_idUsuario, fechaVenta, detallesVenta, pagoRecibido, cambio, "Realizada", corteVigente.IdCorte, placaCarro);
+                        var nuevaVenta = _ventasService.RegistrarVenta(_idUsuario, fechaVenta, detallesVenta, pagoRecibido, cambio, "Realizada", corteVigente.IdCorte, placaCarro, metodoPago);
                         int folioVenta = nuevaVenta.FolioVenta;
 
                         // Crear el DTO para la venta
@@ -359,6 +360,8 @@ namespace POS_CHITOS
                             Estado = "Realizada",
                             PagoRecibido = pagoRecibido,
                             Cambio = cambio,
+                            MetodoPago = metodoPago
+                            
 
                         };
 
@@ -803,6 +806,7 @@ namespace POS_CHITOS
                 float pagoRecibido = 0f;
                 float cambio = 0f;
                 var placaCarro = TB_Placa.Text.Trim();
+                var metodoPago = "PENDIENTE";
 
                 var venta = _ventasService.RegistrarVenta(
                     _idUsuario,
@@ -812,7 +816,9 @@ namespace POS_CHITOS
                     cambio,
                     "EnEspera",
                     corteVigente.IdCorte,
-                    placaCarro
+                    placaCarro,
+                    metodoPago
+
                 );
 
                 // Si manejas placa, ya la guardas al registrar (como hicimos antes)

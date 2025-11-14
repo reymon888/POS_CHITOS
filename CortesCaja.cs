@@ -19,6 +19,10 @@ namespace POS_CHITOS
         public float TotalSalidas { get; set; } = 0; // Total de salidas de efectivo
         public string EstadoCorte { get; set; } = "No Realizado"; // Estado del corte
 
+        public float TotalVentasEfectivo { get; set; } = 0; // nuevo
+        public float TotalVentasTarjeta { get; set; } = 0; // nuevo
+        public float TotalVentasTransfer { get; set; } = 0;  // nuevo
+
         // Relación con la entidad Usuarios
         public Usuario Usuario { get; set; }
     }

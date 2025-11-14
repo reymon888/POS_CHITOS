@@ -39,18 +39,36 @@ namespace POS_CHITOS
             _context.SaveChanges();
         }
 
+        public float ObtenerTotalVentasRealizadasPorMetodo(int idCorte, string metodo)
+        {
+            var total = _context.ventas
+                .Where(v => v.IdCorte == idCorte && v.Estado == "Realizada" && v.MetodoPago == metodo)
+                .SelectMany(v => v.DetallesVenta)
+                .Sum(d => d.Cantidad * d.PrecioUnitario);
+
+            return total;
+        }
+
         public float ObtenerTotalVentasRealizadas(int idCorte)
         {
-            return _context.ventas
-                           .Where(v => v.IdCorte == idCorte)
-                           .Sum(v => v.TotalVenta);
+            var total = _context.ventas
+                .AsNoTracking()
+                .Where(v => v.IdCorte == idCorte && v.Estado == "Realizada")
+                .SelectMany(v => v.DetallesVenta)
+                .Sum(d => d.Cantidad * d.PrecioUnitario);
+
+            return total;
         }
 
         public float ObtenerTotalVentasCanceladas(int idCorte)
         {
-            return _context.ventas
-                           .Where(v => v.IdCorte == idCorte && v.Estado == "Cancelada")
-                           .Sum(v => v.TotalVenta);
+            var total = _context.ventas
+                .AsNoTracking()
+                .Where(v => v.IdCorte == idCorte && v.Estado == "Cancelada")
+                .SelectMany(v => v.DetallesVenta)
+                .Sum(d => d.Cantidad * d.PrecioUnitario);
+
+            return total;
         }
 
         public float ObtenerTotalComprasRealizadas(int idCorte)
@@ -140,65 +158,62 @@ namespace POS_CHITOS
         // Método para finalizar el corte
         public void FinalizarCorte(int idCorte, int idUsuario)
         {
-            using (var transaction = _context.Database.BeginTransaction())
+            using var tx = _context.Database.BeginTransaction();
+            try
             {
-                try
-                {
-                    var corteActual = _context.CortesCaja.FirstOrDefault(c => c.IdCorte == idCorte && c.EstadoCorte == "No Realizado");
+                var corte = _context.CortesCaja.FirstOrDefault(c => c.IdCorte == idCorte && c.EstadoCorte == "No Realizado")
+                           ?? throw new Exception("No se encontró el corte o ya ha sido realizado.");
 
-                    if (corteActual == null)
-                    {
-                        throw new Exception("No se encontró el corte o ya ha sido realizado.");
-                    }
+                if (corte.IdUsuario != idUsuario)
+                    throw new Exception("No tienes permiso para finalizar este corte.");
 
-                    // Validar que el corte pertenece al usuario actual
-                    if (corteActual.IdUsuario != idUsuario)
-                    {
-                        throw new Exception("No tienes permiso para finalizar este corte. Solo el usuario que inició el corte puede cerrarlo.");
-                    }
+                // --- Totales por método (solo Realizada) ---
+                float ventasEfec = ObtenerTotalVentasRealizadasPorMetodo(idCorte, "EFECTIVO");
+                float ventasTar = ObtenerTotalVentasRealizadasPorMetodo(idCorte, "TARJETA");
+                float ventasTrf = ObtenerTotalVentasRealizadasPorMetodo(idCorte, "TRANSFERENCIA");
 
-                    // Obtener los totales
-                    float totalVentasRealizadas = ObtenerTotalVentasRealizadas(idCorte);
-                    float totalVentasCanceladas = ObtenerTotalVentasCanceladas(idCorte);
-                    float totalComprasRealizadas = ObtenerTotalComprasRealizadas(idCorte);
-                    float totalComprasCanceladas = ObtenerTotalComprasCanceladas(idCorte);
-                    float totalEntradasRealizadas = ObtenerTotalEntradasRealizadas(idCorte);
-                    float totalEntradasCanceladas = ObtenerTotalEntradasCanceladas(idCorte);
-                    float totalSalidasRealizadas = ObtenerTotalSalidasRealizadas(idCorte);
-                    float totalSalidasCanceladas = ObtenerTotalSalidasCanceladas(idCorte);
+                // --- Totales globales ya existentes ---
+                float ventasRealizadas = ObtenerTotalVentasRealizadas(idCorte);
+                float ventasCanceladas = ObtenerTotalVentasCanceladas(idCorte);
 
-                    // Calcular los valores netos
-                    float totalVentas = totalVentasRealizadas - totalVentasCanceladas;
-                    float totalCompras = totalComprasRealizadas - totalComprasCanceladas;
-                    float totalEntradas = totalEntradasRealizadas - totalEntradasCanceladas;
-                    float totalSalidas = totalSalidasRealizadas - totalSalidasCanceladas;
+                float comprasRealizadas = ObtenerTotalComprasRealizadas(idCorte);
+                float comprasCanceladas = ObtenerTotalComprasCanceladas(idCorte);
+                float entradasRealizadas = ObtenerTotalEntradasRealizadas(idCorte);
+                float entradasCanceladas = ObtenerTotalEntradasCanceladas(idCorte);
+                float salidasRealizadas = ObtenerTotalSalidasRealizadas(idCorte);
+                float salidasCanceladas = ObtenerTotalSalidasCanceladas(idCorte);
 
-                    // Calcular el monto final del corte
-                    float montoFinal = corteActual.MontoInicio + totalVentas + totalEntradas - totalCompras - totalSalidas;
+                // Netos
+                float totalVentas = ventasRealizadas - ventasCanceladas;          // (incluye todos los métodos)
+                float totalCompras = comprasRealizadas - comprasCanceladas;
+                float totalEntradas = entradasRealizadas - entradasCanceladas;
+                float totalSalidas = salidasRealizadas - salidasCanceladas;
 
-                  
+                // *** Caja física: SOLO EFECTIVO ***
+                // Lo normal es que Compras/Entradas/Salidas ya estén en efectivo;
+                // si luego tipificas por método, ajustas esta fórmula.
+                float montoFinalCaja = corte.MontoInicio + ventasEfec + totalEntradas - totalCompras - totalSalidas;
 
-                    // Actualizar los valores en el corte
-                    corteActual.TotalVentas = totalVentas;
-                    corteActual.TotalCompras = totalCompras;
-                    corteActual.TotalEntradas = totalEntradas;
-                    corteActual.TotalSalidas = totalSalidas;
-                    corteActual.EstadoCorte = "Realizado";
-                 
+                // Persistir desglose en Corte (agrega estos campos en tu modelo si no existen)
+                corte.TotalVentas = totalVentas; // todos los métodos
+                corte.TotalVentasEfectivo = ventasEfec;
+                corte.TotalVentasTarjeta = ventasTar;
+                corte.TotalVentasTransfer = ventasTrf;
+                corte.TotalEntradas = totalEntradas;
+                corte.TotalSalidas = totalSalidas;
+                corte.TotalCompras = totalCompras;
+                corte.EstadoCorte = "Realizado";
 
-                    // Guardar los cambios en la base de datos
-                    _context.SaveChanges();
-
-                    // Confirmar la transacción
-                    transaction.Commit();
-                }
-                catch (Exception ex)
-                {
-                    transaction.Rollback();
-                    throw new Exception("Error al finalizar el corte: " + ex.Message);
-                }
+                _context.SaveChanges();
+                tx.Commit();
+            }
+            catch (Exception ex)
+            {
+                tx.Rollback();
+                throw new Exception("Error al finalizar el corte: " + ex.Message);
             }
         }
+
         public CortesCaja ObtenerCortePorId(int idCorte)
         {
             return _context.CortesCaja.FirstOrDefault(c => c.IdCorte == idCorte);

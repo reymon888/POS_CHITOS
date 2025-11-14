@@ -21,11 +21,16 @@ namespace POS_CHITOS
         private List<VentaDTO> _ventas;  // Lista de ventas completa
         private Usuario _usuarioActual;  // Usuario actual
         private readonly BindingSource _bsVentas = new();
+        private Control _lista => DGV_Ventas;
+        private bool _mostrandoEnEspera = false;
+        private bool _mostrandoHistorialPlaca = false;
+        private Control? _vistaActual;
         public V_MenuVentas(int idusuario, POSContext context)
         {
             InitializeComponent();
             ventasService = new VentasService(context);
             _usuarioActual = context.Usuarios.Find(idusuario);
+
 
             ConfigurarGridVentas();
             CargarVentas();
@@ -33,8 +38,37 @@ namespace POS_CHITOS
             // Suscribir eventos de filtros
             TB_BuscarVenta.TextChanged += TB_BuscarVenta_TextChanged;
             ConfigurarPermisos();
-        }
+            InicializarVista(); // <- importante
 
+        }
+        private void InicializarVista()
+        {
+            // Garantiza que la lista viva dentro del host desde el inicio
+            if (_lista.Parent != panelHost)
+            {
+                _lista.Parent = panelHost;
+                _lista.Dock = DockStyle.Fill;
+            }
+            MostrarLista(); // pinta la grilla en el host
+        }
+        private void MostrarLista()
+        {
+            panelHost.SuspendLayout();
+            panelHost.Controls.Clear();
+
+            _lista.Visible = true;
+            _lista.Dock = DockStyle.Fill;
+            if (_lista.Parent != panelHost) _lista.Parent = panelHost;
+
+            panelHost.Controls.Add(_lista);
+            _vistaActual = null;
+
+            if (panelBotonera != null) panelBotonera.Visible = true;
+
+            panelHost.Visible = true;
+            panelHost.BringToFront();
+            panelHost.ResumeLayout();
+        }
         private void VerificarPermisosVentaSeleccionada()
         {
             // Asegurarse de que _ventas está inicializado
@@ -88,102 +122,132 @@ namespace POS_CHITOS
 
         private void B_MostrarDetalles_Click(object sender, EventArgs e)
         {
-            if (DGV_Ventas.SelectedRows.Count > 0)
-            {
-                try
-                {
-                    // Obtener la fila seleccionada
-                    var filaSeleccionada = DGV_Ventas.SelectedRows[0];
+            if (DGV_Ventas.SelectedRows.Count == 0) { CustomMessageBox.Show("Selecciona una venta.", "Aviso"); return; }
 
-                    if (filaSeleccionada.Cells["FolioVenta"].Value != null && int.TryParse(filaSeleccionada.Cells["FolioVenta"].Value.ToString(), out int FolioVenta))
-                    {
-                        if (FolioVenta > 0)
-                        {
-                            // Crear el formulario de modificación de compra
-                            V_MostrarDetallesVenta MostrarDetallesVentaForm = new V_MostrarDetallesVenta(FolioVenta);
+            var row = DGV_Ventas.SelectedRows[0];
+            if (row.Cells["FolioVenta"].Value == null || !int.TryParse(row.Cells["FolioVenta"].Value.ToString(), out int folio))
+            { CustomMessageBox.Show("Folio inválido.", "Error"); return; }
 
-                            // Mostrar el formulario y verificar si se cerró con éxito (DialogResult.OK)
-                            if (MostrarDetallesVentaForm.ShowDialog() == DialogResult.OK)
-                            {
-                                // Recargar la tabla de compras solo si la modificación fue exitosa
-                                CargarVentas();
-                            }
-
-                        }
-                        else // Si el ID de la compra no es válido
-                        {
-                            CustomMessageBox.Show("El folio de la venta no es válido.", "Error");
-                        }
-
-                    }
-                    else // Si el ID de la compra no es válido
-                    {
-                        CustomMessageBox.Show("No se pudo obtener el ID de la compra seleccionada. Asegúrate de que esté correctamente seleccionado.", "Error");
-                    }
-                }
-                catch (Exception ex) // Si no se seleccionó ninguna fila
-                {
-                    CustomMessageBox.Show($"Error al convertir el ID de la compra: {ex.Message}", "Error");
-                }
-            }
-            else // Si no se seleccionó ninguna fila
-            {
-                CustomMessageBox.Show("Selecciona una venta para modificar.", "Error");
-            }
+            var form = new V_MostrarDetallesVenta(folio, onClose: refrescar => CloseEmbeddedView(refrescar));
+            ShowFormInPanel(form);
         }
 
         private void B_ModificarVenta_Click(object sender, EventArgs e)
         {
             VerificarPermisosVentaSeleccionada();
-
-            // Si el botón está habilitado, procede a abrir el formulario de modificación
-            if (B_ModificarVenta.Enabled)
-            {
-                // Código para abrir el formulario de modificación
-                if (DGV_Ventas.SelectedRows.Count > 0)
-                {
-                    var filaSeleccionada = DGV_Ventas.SelectedRows[0];
-                    if (filaSeleccionada.Cells["FolioVenta"].Value != null &&
-                        int.TryParse(filaSeleccionada.Cells["FolioVenta"].Value.ToString(), out int folioVenta))
-                    {
-                        using (V_ModificarVenta modificarVentaForm = new V_ModificarVenta(folioVenta, _usuarioActual.Id, new POSContext(new DbContextOptions<POSContext>())))
-                        {
-                            if (modificarVentaForm.ShowDialog() == DialogResult.OK)
-                            {
-                                CargarVentas();
-                            }
-                        }
-                    }
-                }
-            }
-            else
+            if (!B_ModificarVenta.Enabled)
             {
                 CustomMessageBox.Show("No se puede modificar esta venta ya que el corte está realizado.", "Acción no permitida");
-                //activar botones
-                B_ModificarVenta.Enabled = true;
-                B_CancelarVenta.Enabled = true;
+                return;
             }
+            if (DGV_Ventas.SelectedRows.Count == 0)
+            {
+                CustomMessageBox.Show("Selecciona una venta.", "Aviso");
+                return;
+            }
+
+            var row = DGV_Ventas.SelectedRows[0];
+            if (row.Cells["FolioVenta"].Value == null || !int.TryParse(row.Cells["FolioVenta"].Value.ToString(), out int folioVenta))
+            {
+                CustomMessageBox.Show("Folio inválido.", "Error");
+                return;
+            }
+
+            // === Embebido ===
+            var ctx = new POSContext(new DbContextOptions<POSContext>());
+            var form = new V_ModificarVenta(
+                folioVenta,
+                _usuarioActual.Id,
+                ctx,
+                onClose: refrescar => CloseEmbeddedView(refrescar)   // <- vuelve al listado y refresca si procede
+            );
+
+            ShowFormInPanel(form);
         }
 
         private void TB_BuscarVenta_TextChanged(object sender, EventArgs e)
         {
             AplicarFiltros();
         }
+
         private void AplicarFiltros()
         {
-            if (_ventas == null)
-                _ventas = ventasService.ObtenerVentas();
+            // Si está en modo historial de placa, no aplicar filtros
+            if (_mostrandoHistorialPlaca)
+                return;
 
-            var f = (TB_BuscarVenta.Text ?? "").Trim().ToLowerInvariant();
+            var f = (TB_BuscarVenta.Text ?? "").Trim();
+
+            // Si el campo está vacío, recargar según el estado actual
+            if (string.IsNullOrEmpty(f))
+            {
+                if (_mostrandoEnEspera)
+                {
+                    _ventas = ventasService.ObtenerVentasEnEspera();
+                }
+                else
+                {
+                    _ventas = ventasService.ObtenerVentas();
+                }
+                ActualizarGridSilencioso(_ventas);
+                return;
+            }
+
+            // *** Detectar si es un número (folio) ***
+            if (int.TryParse(f, out int folio) || f.All(char.IsDigit))
+            {
+                // Buscar primero en las ventas actuales
+                var ventasEnCache = _ventas?.Where(v => v.FolioVenta.ToString().Contains(f)).ToList();
+
+                if (ventasEnCache != null && ventasEnCache.Any())
+                {
+                    // Si encuentra en cache, mostrarlas
+                    ActualizarGridSilencioso(ventasEnCache);
+                    return;
+                }
+
+                // Si no está en cache, buscar en historial completo
+                var ventasHistorial = ventasService.BuscarVentasPorFolioHistorial(f);
+
+                if (ventasHistorial.Any())
+                {
+                    ActualizarGridSilencioso(ventasHistorial);
+                    return;
+                }
+                else
+                {
+                    // No se encontró nada
+                    ActualizarGridSilencioso(new List<VentaDTO>());
+                    return;
+                }
+            }
+
+            // *** Búsqueda normal por texto (nombre, placa, etc.) ***
+            var fLower = f.ToLowerInvariant();
+
+            if (_ventas == null)
+                _ventas = _mostrandoEnEspera ? ventasService.ObtenerVentasEnEspera() : ventasService.ObtenerVentas();
 
             var ventasFiltradas = _ventas.Where(v =>
                 v.FolioVenta.ToString().Contains(f) ||
-                (!string.IsNullOrEmpty(v.NombreUsuario) && v.NombreUsuario.ToLower().Contains(f)) ||
-                (!string.IsNullOrEmpty(v.Usuario) && v.Usuario.ToLower().Contains(f)) || // por si usas esta propiedad en algún lugar
-                (!string.IsNullOrEmpty(v.PlacaCarro) && v.PlacaCarro.ToLower().Contains(f))
+                (!string.IsNullOrEmpty(v.NombreUsuario) && v.NombreUsuario.ToLower().Contains(fLower)) ||
+                (!string.IsNullOrEmpty(v.Usuario) && v.Usuario.ToLower().Contains(fLower)) ||
+                (!string.IsNullOrEmpty(v.PlacaCarro) && v.PlacaCarro.ToLower().Contains(fLower))
             ).ToList();
 
-            CargarVentas(ventasFiltradas);
+            ActualizarGridSilencioso(ventasFiltradas);
+        }
+
+        // 2. AGREGAR este nuevo método después de AplicarFiltros():
+        private void ActualizarGridSilencioso(List<VentaDTO> ventas)
+        {
+            if (_usuarioActual.Rol == "Cajero")
+                ventas = ventas.Where(v => v.NombreUsuario == _usuarioActual.NombreUsuario).ToList();
+
+            _ventas = ventas;
+            _bsVentas.DataSource = null;
+            _bsVentas.DataSource = ventas;
+            _bsVentas.ResetBindings(false);
         }
 
 
@@ -415,6 +479,15 @@ namespace POS_CHITOS
 
             DGV_Ventas.Columns.Add(new DataGridViewTextBoxColumn
             {
+                Name = "MetodoPago",
+                HeaderText = "Metodo de Pago",
+                DataPropertyName = "MetodoPago",
+                FillWeight = 14,
+                DefaultCellStyle = { Format = "C2" }
+            });
+
+            DGV_Ventas.Columns.Add(new DataGridViewTextBoxColumn
+            {
                 Name = "Estado",
                 HeaderText = "Estado",
                 DataPropertyName = "Estado",
@@ -462,7 +535,215 @@ namespace POS_CHITOS
             // Enlaza el BS
             DGV_Ventas.DataSource = _bsVentas;
         }
+
+        private void ShowFormInPanel(Form f)
+        {
+            panelHost.SuspendLayout();
+
+            // Esconde el listado (NO el host)
+            _lista.Visible = false;
+            if (panelBotonera != null) panelBotonera.Visible = false;
+
+            // Limpia vista anterior
+            if (_vistaActual != null)
+            {
+                panelHost.Controls.Remove(_vistaActual);
+                _vistaActual.Dispose();
+                _vistaActual = null;
+            }
+
+            // Embebe el form
+            f.TopLevel = false;
+            f.FormBorderStyle = FormBorderStyle.None;
+            f.Dock = DockStyle.Fill;
+
+            panelHost.Controls.Clear();     // saca la grilla del host
+            panelHost.Controls.Add(f);      // mete el hijo
+            _vistaActual = f;
+
+            // fallback por si cierran con la X
+            f.FormClosed -= Child_FormClosedRestore;
+            f.FormClosed += Child_FormClosedRestore;
+
+            panelHost.Visible = true;       // host siempre visible
+            panelHost.BringToFront();
+
+            panelHost.ResumeLayout();
+            f.Show();
+        }
+
+
+        private void Child_FormClosedRestore(object? sender, FormClosedEventArgs e)
+        {
+            // si el hijo se cerró con la X, regresa al listado y refresca
+            CloseEmbeddedView(refrescar: true);
+        }
+
+        private void CloseEmbeddedView(bool refrescar)
+        {
+            if (_vistaActual != null)
+            {
+                if (_vistaActual is Form f)
+                    f.FormClosed -= Child_FormClosedRestore;
+
+                panelHost.Controls.Remove(_vistaActual);
+                _vistaActual.Dispose();
+                _vistaActual = null;
+            }
+
+            MostrarLista();
+
+            if (refrescar)
+            {
+                // Respetar el filtro actual al refrescar
+                if (_mostrandoEnEspera)
+                {
+                    var ventasEnEspera = ventasService.ObtenerVentasEnEspera();
+                    CargarVentas(ventasEnEspera);
+                }
+                else
+                {
+                    CargarVentas();
+                }
+                Toast.Show(this, "Ventas actualizadas.", ToastType.Success, 1600, ToastPosition.BottomRight);
+            }
+        }
+
+        private void B_VentaEspera_Click(object sender, EventArgs e)
+        {
+            if (_mostrandoEnEspera)
+            {
+                // Si ya está mostrando en espera, regresar a la vista normal (del día)
+                _mostrandoEnEspera = false;
+                B_VentaEspera.Text = "Ventas en Espera"; // Cambiar texto del botón
+                CargarVentas(); // Cargar ventas normales del día
+                Toast.Show(this, "Mostrando ventas del día.", ToastType.Info, 1600, ToastPosition.TopRight);
+            }
+            else
+            {
+                // Mostrar solo ventas en espera (de todos los días)
+                _mostrandoEnEspera = true;
+                B_VentaEspera.Text = "Ver Todas"; // Cambiar texto del botón
+                var ventasEnEspera = ventasService.ObtenerVentasEnEspera();
+                CargarVentas(ventasEnEspera);
+                Toast.Show(this, $"Mostrando {ventasEnEspera.Count} ventas en espera.", ToastType.Info, 1600, ToastPosition.TopRight);
+            }
+        }
+
+        private void B_BuscarPlaca_Click(object sender, EventArgs e)
+        {
+            // Si ya está en modo historial, salir
+            if (_mostrandoHistorialPlaca)
+            {
+                SalirDeModoHistorial();
+                return;
+            }
+
+            // Crear un Form simple para pedir la placa
+            using (var formPlaca = new Form())
+            {
+                formPlaca.Text = "Buscar Historial por Placa";
+                formPlaca.Size = new Size(400, 180);
+                formPlaca.StartPosition = FormStartPosition.CenterParent;
+                formPlaca.FormBorderStyle = FormBorderStyle.FixedDialog;
+                formPlaca.MaximizeBox = false;
+                formPlaca.MinimizeBox = false;
+
+                var lblMensaje = new Label
+                {
+                    Text = "Ingresa la placa del vehículo:",
+                    Location = new Point(20, 20),
+                    Size = new Size(350, 30),
+                    Font = new Font("Segoe UI", 12)
+                };
+
+                var txtPlaca = new TextBox
+                {
+                    Location = new Point(20, 55),
+                    Size = new Size(340, 30),
+                    Font = new Font("Segoe UI", 12),
+                    CharacterCasing = CharacterCasing.Upper,
+                    Text = TB_BuscarVenta.Text.Trim()
+                };
+
+                var btnBuscar = new Button
+                {
+                    Text = "Buscar",
+                    Location = new Point(180, 100),
+                    Size = new Size(100, 35),
+                    DialogResult = DialogResult.OK,
+                    Font = new Font("Segoe UI", 10)
+                };
+
+                var btnCancelar = new Button
+                {
+                    Text = "Cancelar",
+                    Location = new Point(290, 100),
+                    Size = new Size(100, 35),
+                    DialogResult = DialogResult.Cancel,
+                    Font = new Font("Segoe UI", 10)
+                };
+
+                formPlaca.Controls.AddRange(new Control[] { lblMensaje, txtPlaca, btnBuscar, btnCancelar });
+                formPlaca.AcceptButton = btnBuscar;
+                formPlaca.CancelButton = btnCancelar;
+
+                txtPlaca.Focus();
+                txtPlaca.SelectAll();
+
+                // Evento Enter en el TextBox
+                txtPlaca.KeyDown += (s, ev) =>
+                {
+                    if (ev.KeyCode == Keys.Enter)
+                    {
+                        btnBuscar.PerformClick();
+                        ev.Handled = true;
+                    }
+                };
+
+                if (formPlaca.ShowDialog() != DialogResult.OK)
+                    return;
+
+                string placa = txtPlaca.Text.Trim();
+
+                if (string.IsNullOrWhiteSpace(placa))
+                {
+                    CustomMessageBox.Show("Debes ingresar una placa.", "Campo vacío");
+                    return;
+                }
+
+                // Buscar en el historial
+                var ventasPorPlaca = ventasService.ObtenerVentasPorPlaca(placa);
+
+                if (ventasPorPlaca.Count == 0)
+                {
+                    CustomMessageBox.Show($"No se encontraron ventas para: {placa}", "Sin resultados");
+                    return;
+                }
+
+                // Activar modo historial
+                _mostrandoHistorialPlaca = true;
+                _mostrandoEnEspera = false;
+
+                B_VentaEspera.Text = "Ventas en Espera";
+                B_BuscarPlaca.Text = "Salir de Historial";
+                TB_BuscarVenta.Text = placa;
+
+                CargarVentas(ventasPorPlaca);
+                Toast.Show(this, $"Historial: {ventasPorPlaca.Count} ventas de {placa}",
+                           ToastType.Success, 2500, ToastPosition.TopRight);
+            }
+        }
+        private void SalirDeModoHistorial()
+        {
+            _mostrandoHistorialPlaca = false;
+            B_BuscarPlaca.Text = "Buscar por Placa";
+            TB_BuscarVenta.Clear();
+            CargarVentas();
+            Toast.Show(this, "Regresando a ventas del día.", ToastType.Info, 1600, ToastPosition.TopRight);
+        }
+    }
     }
 
-}
+
 

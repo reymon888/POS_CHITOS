@@ -275,23 +275,49 @@ namespace POS_CHITOS
                     currentY += lineHeight * 2;
 
                     // Sección Ventas
-                    gfx.DrawString("Ventas", fontNegrita, XBrushes.Black, new XRect(marginLeft, currentY, page.Width, lineHeight), XStringFormats.TopLeft);
+                    // ===== Sección Ventas =====
+                    gfx.DrawString("Ventas", fontNegrita, XBrushes.Black,
+                        new XRect(marginLeft, currentY, page.Width, lineHeight), XStringFormats.TopLeft);
                     currentY += lineHeight;
-                    gfx.DrawString($"Total en Ventas: {_corteService.ObtenerTotalVentasRealizadas(idCorte).ToString("C2")}", fontTexto, XBrushes.Black, new XRect(marginLeft + 20, currentY, page.Width, lineHeight), XStringFormats.TopLeft);
+
+                    // Totales globales (solo realizadas)
+                    var totalVentasRealizadas = _corteService.ObtenerTotalVentasRealizadas(idCorte);
+                    var totalVentasCanceladas = _corteService.ObtenerTotalVentasCanceladas(idCorte);
+                    var totalVentasNetas = totalVentasRealizadas - totalVentasCanceladas;
+
+                    gfx.DrawString($"Total en Ventas (Netas): {totalVentasNetas.ToString("C2")}", fontTexto, XBrushes.Black,
+                        new XRect(marginLeft + 20, currentY, page.Width, lineHeight), XStringFormats.TopLeft);
                     currentY += lineHeight;
-                    gfx.DrawString($"Total en Ventas (Canceladas): {_corteService.ObtenerTotalVentasCanceladas(idCorte).ToString("C2")}", fontTexto, XBrushes.Black, new XRect(marginLeft + 20, currentY, page.Width, lineHeight), XStringFormats.TopLeft);
+
+                    // Desglose por método (solo realizadas)
+                    var ventasEfec = _corteService.ObtenerTotalVentasRealizadasPorMetodo(idCorte, "EFECTIVO");
+                    var ventasTar = _corteService.ObtenerTotalVentasRealizadasPorMetodo(idCorte, "TARJETA");
+                    var ventasTrf = _corteService.ObtenerTotalVentasRealizadasPorMetodo(idCorte, "TRANSFERENCIA");
+
+                    gfx.DrawString($"   • Efectivo: {ventasEfec.ToString("C2")}", fontTexto, XBrushes.Black,
+                        new XRect(marginLeft + 40, currentY, page.Width, lineHeight), XStringFormats.TopLeft);
+                    currentY += lineHeight;
+                    gfx.DrawString($"   • Tarjeta: {ventasTar.ToString("C2")}", fontTexto, XBrushes.Black,
+                        new XRect(marginLeft + 40, currentY, page.Width, lineHeight), XStringFormats.TopLeft);
+                    currentY += lineHeight;
+                    gfx.DrawString($"   • Transferencia: {ventasTrf.ToString("C2")}", fontTexto, XBrushes.Black,
+                        new XRect(marginLeft + 40, currentY, page.Width, lineHeight), XStringFormats.TopLeft);
                     currentY += lineHeight * 2;
 
-                    // Monto final en caja
-                    float totalVentas = _corteService.ObtenerTotalVentasRealizadas(idCorte) - _corteService.ObtenerTotalVentasCanceladas(idCorte);
-                    float totalCompras = _corteService.ObtenerTotalComprasRealizadas(idCorte) - _corteService.ObtenerTotalComprasCanceladas(idCorte);
-                    float totalEntradasEfectivo = _corteService.ObtenerTotalEntradasRealizadas(idCorte) - _corteService.ObtenerTotalEntradasCanceladas(idCorte);
-                    float totalSalidasEfectivo = _corteService.ObtenerTotalSalidasRealizadas(idCorte) - _corteService.ObtenerTotalSalidasCanceladas(idCorte);
+                    // ===== Monto final en caja (solo EFECTIVO) =====
+                    // Si Entradas/Salidas/Compras son en efectivo (tu caso actual), puedes reusar tus helpers netos:
+                    float totalEntradasEf = _corteService.ObtenerTotalEntradasRealizadas(idCorte) - _corteService.ObtenerTotalEntradasCanceladas(idCorte);
+                    float totalSalidasEf = _corteService.ObtenerTotalSalidasRealizadas(idCorte) - _corteService.ObtenerTotalSalidasCanceladas(idCorte);
+                    float totalComprasEf = _corteService.ObtenerTotalComprasRealizadas(idCorte) - _corteService.ObtenerTotalComprasCanceladas(idCorte);
                     float montoInicial = _corteService.ObtenerMontoInicialCorte(idCorte);
-                    float montoFinal = montoInicial + totalVentas + totalEntradasEfectivo - totalCompras - totalSalidasEfectivo;
 
-                    gfx.DrawString($"Monto Final en Caja: {montoFinal.ToString("C2")}", fontSubTitulo, XBrushes.Black, new XRect(0, currentY, page.Width, lineHeight), XStringFormats.TopCenter);
+                    // Caja física = solo ventas en EFECTIVO + entradas - compras - salidas
+                    float montoFinalCaja = montoInicial + (float)ventasEfec + totalEntradasEf - totalComprasEf - totalSalidasEf;
+
+                    gfx.DrawString($"Monto Final en Caja (solo EFECTIVO): {montoFinalCaja.ToString("C2")}", fontSubTitulo, XBrushes.Black,
+                        new XRect(0, currentY, page.Width, lineHeight), XStringFormats.TopCenter);
                     currentY += lineHeight * 2;
+
 
                     // Guardar el documento en la ubicación seleccionada
                     pdf.Save(filePath);

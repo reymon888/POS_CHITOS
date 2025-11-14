@@ -16,13 +16,16 @@ namespace POS_CHITOS
     {
         private readonly int _FolioVenta;
         private readonly VentasService VentasService;
-        public V_MostrarDetallesVenta(int FolioVenta)
+        private readonly Action<bool>? _onClose; // bool = refrescar lista
+
+        public V_MostrarDetallesVenta(int FolioVenta, Action<bool>? onClose = null)
         {
             InitializeComponent();
             _FolioVenta = FolioVenta;
+            _onClose = onClose;
             var context = new POSContext(new DbContextOptions<POSContext>());
             VentasService = new VentasService(context);
-          
+
             CargarDetallesVenta(_FolioVenta);
             CalcularTotalVenta();
 
@@ -38,7 +41,7 @@ namespace POS_CHITOS
                 TB_Usuario.Text = venta.NombreUsuario;
                 TB_FolioVenta.Text = venta.FolioVenta.ToString();
                 dateTimePicker1.Value = venta.FechaVenta;
-
+                TB_Placa.Text = (venta.PlacaCarro ?? "").ToUpperInvariant();
                 // Asigna directamente los detalles de la venta sin depender de inventario
                 DGV_DetallesVentas.DataSource = venta.DetallesVenta;
                 ConfigurarColumnasDGV();
@@ -119,6 +122,20 @@ namespace POS_CHITOS
                 TB_TotalVenta.Text = totalVenta.ToString("C2");
             }
         }
+        private void Finalizar(bool refrescar)
+        {
+            if (TopLevel)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+            else
+            {
+                _onClose?.Invoke(refrescar);
+            }
+        }
+
+        private void B_Cerrar_Click(object sender, EventArgs e) => Finalizar(false);
 
     }
 }
