@@ -34,11 +34,7 @@
             B_VentaEspera = new Button();
             B_Ticket = new Button();
             B_BuscarPorFecha = new Button();
-            label2 = new Label();
-            label1 = new Label();
-            DTP_Hasta = new DateTimePicker();
             pictureBox1 = new PictureBox();
-            DTP_Desde = new DateTimePicker();
             B_MostrarDetalles = new Button();
             B_ActualizarTabla = new Button();
             B_ModificarVenta = new Button();
@@ -67,7 +63,7 @@
             DGV_Ventas.RowHeadersVisible = false;
             DGV_Ventas.RowHeadersWidth = 51;
             DGV_Ventas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            DGV_Ventas.Size = new Size(1408, 474);
+            DGV_Ventas.Size = new Size(1347, 474);
             DGV_Ventas.TabIndex = 6;
             // 
             // panelBotonera
@@ -77,11 +73,7 @@
             panelBotonera.Controls.Add(B_VentaEspera);
             panelBotonera.Controls.Add(B_Ticket);
             panelBotonera.Controls.Add(B_BuscarPorFecha);
-            panelBotonera.Controls.Add(label2);
-            panelBotonera.Controls.Add(label1);
-            panelBotonera.Controls.Add(DTP_Hasta);
             panelBotonera.Controls.Add(pictureBox1);
-            panelBotonera.Controls.Add(DTP_Desde);
             panelBotonera.Controls.Add(B_MostrarDetalles);
             panelBotonera.Controls.Add(B_ActualizarTabla);
             panelBotonera.Controls.Add(B_ModificarVenta);
@@ -91,7 +83,7 @@
             panelBotonera.Location = new Point(0, 0);
             panelBotonera.Margin = new Padding(3, 2, 3, 2);
             panelBotonera.Name = "panelBotonera";
-            panelBotonera.Size = new Size(1408, 92);
+            panelBotonera.Size = new Size(1347, 92);
             panelBotonera.TabIndex = 5;
             // 
             // B_BuscarPlaca
@@ -104,7 +96,7 @@
             B_BuscarPlaca.Font = new Font("Segoe UI", 10.2F);
             B_BuscarPlaca.ForeColor = Color.FromArgb(44, 140, 153);
             B_BuscarPlaca.Image = Properties.Resources.placa__1_;
-            B_BuscarPlaca.Location = new Point(850, 0);
+            B_BuscarPlaca.Location = new Point(711, 0);
             B_BuscarPlaca.Margin = new Padding(3, 2, 3, 2);
             B_BuscarPlaca.Name = "B_BuscarPlaca";
             B_BuscarPlaca.Size = new Size(76, 92);
@@ -124,7 +116,7 @@
             B_VentaEspera.Font = new Font("Segoe UI", 10.2F);
             B_VentaEspera.ForeColor = Color.FromArgb(44, 140, 153);
             B_VentaEspera.Image = Properties.Resources.pendiente;
-            B_VentaEspera.Location = new Point(926, 0);
+            B_VentaEspera.Location = new Point(787, 0);
             B_VentaEspera.Margin = new Padding(3, 2, 3, 2);
             B_VentaEspera.Name = "B_VentaEspera";
             B_VentaEspera.Size = new Size(76, 92);
@@ -144,7 +136,7 @@
             B_Ticket.Font = new Font("Segoe UI", 10.2F);
             B_Ticket.ForeColor = Color.FromArgb(44, 140, 153);
             B_Ticket.Image = Properties.Resources.factura;
-            B_Ticket.Location = new Point(1002, 0);
+            B_Ticket.Location = new Point(863, 0);
             B_Ticket.Margin = new Padding(3, 2, 3, 2);
             B_Ticket.Name = "B_Ticket";
             B_Ticket.Size = new Size(76, 92);
@@ -156,45 +148,21 @@
             // 
             // B_BuscarPorFecha
             // 
+            B_BuscarPorFecha.Dock = DockStyle.Right;
             B_BuscarPorFecha.FlatAppearance.BorderSize = 0;
             B_BuscarPorFecha.FlatStyle = FlatStyle.Flat;
+            B_BuscarPorFecha.Font = new Font("Segoe UI", 10.2F);
+            B_BuscarPorFecha.ForeColor = Color.FromArgb(44, 140, 153);
             B_BuscarPorFecha.Image = Properties.Resources.calendario;
-            B_BuscarPorFecha.Location = new Point(799, 17);
+            B_BuscarPorFecha.Location = new Point(939, 0);
             B_BuscarPorFecha.Margin = new Padding(3, 2, 3, 2);
             B_BuscarPorFecha.Name = "B_BuscarPorFecha";
-            B_BuscarPorFecha.Size = new Size(38, 36);
+            B_BuscarPorFecha.Size = new Size(78, 92);
             B_BuscarPorFecha.TabIndex = 19;
+            B_BuscarPorFecha.Text = "Ventas Fecha";
+            B_BuscarPorFecha.TextImageRelation = TextImageRelation.ImageAboveText;
             B_BuscarPorFecha.UseVisualStyleBackColor = true;
             B_BuscarPorFecha.Click += B_BuscarPorFecha_Click;
-            // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Font = new Font("Segoe UI Semibold", 10.2F, FontStyle.Bold);
-            label2.Location = new Point(626, 2);
-            label2.Name = "label2";
-            label2.Size = new Size(44, 19);
-            label2.TabIndex = 18;
-            label2.Text = "Hasta";
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI Semibold", 10.2F, FontStyle.Bold);
-            label1.Location = new Point(374, 2);
-            label1.Name = "label1";
-            label1.Size = new Size(47, 19);
-            label1.TabIndex = 17;
-            label1.Text = "Desde";
-            // 
-            // DTP_Hasta
-            // 
-            DTP_Hasta.Font = new Font("Segoe UI", 10.8F);
-            DTP_Hasta.Location = new Point(529, 20);
-            DTP_Hasta.Margin = new Padding(3, 2, 3, 2);
-            DTP_Hasta.Name = "DTP_Hasta";
-            DTP_Hasta.Size = new Size(264, 27);
-            DTP_Hasta.TabIndex = 16;
             // 
             // pictureBox1
             // 
@@ -206,15 +174,6 @@
             pictureBox1.TabIndex = 15;
             pictureBox1.TabStop = false;
             // 
-            // DTP_Desde
-            // 
-            DTP_Desde.Font = new Font("Segoe UI", 10.8F);
-            DTP_Desde.Location = new Point(256, 20);
-            DTP_Desde.Margin = new Padding(3, 2, 3, 2);
-            DTP_Desde.Name = "DTP_Desde";
-            DTP_Desde.Size = new Size(267, 27);
-            DTP_Desde.TabIndex = 7;
-            // 
             // B_MostrarDetalles
             // 
             B_MostrarDetalles.BackColor = SystemColors.ControlLightLight;
@@ -225,7 +184,7 @@
             B_MostrarDetalles.Font = new Font("Segoe UI", 10.2F);
             B_MostrarDetalles.ForeColor = Color.FromArgb(44, 140, 153);
             B_MostrarDetalles.Image = Properties.Resources.archivo__1_;
-            B_MostrarDetalles.Location = new Point(1078, 0);
+            B_MostrarDetalles.Location = new Point(1017, 0);
             B_MostrarDetalles.Margin = new Padding(3, 2, 3, 2);
             B_MostrarDetalles.Name = "B_MostrarDetalles";
             B_MostrarDetalles.Size = new Size(79, 92);
@@ -245,7 +204,7 @@
             B_ActualizarTabla.Font = new Font("Segoe UI", 10.2F);
             B_ActualizarTabla.ForeColor = Color.FromArgb(44, 140, 153);
             B_ActualizarTabla.Image = Properties.Resources.recargar;
-            B_ActualizarTabla.Location = new Point(1157, 0);
+            B_ActualizarTabla.Location = new Point(1096, 0);
             B_ActualizarTabla.Margin = new Padding(3, 2, 3, 2);
             B_ActualizarTabla.Name = "B_ActualizarTabla";
             B_ActualizarTabla.Size = new Size(88, 92);
@@ -265,7 +224,7 @@
             B_ModificarVenta.Font = new Font("Segoe UI", 10.2F);
             B_ModificarVenta.ForeColor = Color.FromArgb(44, 140, 153);
             B_ModificarVenta.Image = Properties.Resources.circulo;
-            B_ModificarVenta.Location = new Point(1245, 0);
+            B_ModificarVenta.Location = new Point(1184, 0);
             B_ModificarVenta.Margin = new Padding(3, 2, 3, 2);
             B_ModificarVenta.Name = "B_ModificarVenta";
             B_ModificarVenta.Size = new Size(80, 92);
@@ -285,7 +244,7 @@
             B_CancelarVenta.Font = new Font("Segoe UI", 10.2F);
             B_CancelarVenta.ForeColor = Color.FromArgb(44, 140, 153);
             B_CancelarVenta.Image = Properties.Resources.semaforo;
-            B_CancelarVenta.Location = new Point(1325, 0);
+            B_CancelarVenta.Location = new Point(1264, 0);
             B_CancelarVenta.Margin = new Padding(3, 2, 3, 2);
             B_CancelarVenta.Name = "B_CancelarVenta";
             B_CancelarVenta.Size = new Size(83, 92);
@@ -312,14 +271,14 @@
             panelHost.Dock = DockStyle.Fill;
             panelHost.Location = new Point(0, 92);
             panelHost.Name = "panelHost";
-            panelHost.Size = new Size(1408, 474);
+            panelHost.Size = new Size(1347, 474);
             panelHost.TabIndex = 7;
             // 
             // V_MenuVentas
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1408, 566);
+            ClientSize = new Size(1347, 566);
             Controls.Add(panelHost);
             Controls.Add(panelBotonera);
             Margin = new Padding(3, 2, 3, 2);
@@ -337,16 +296,12 @@
 
         private DataGridView DGV_Ventas;
         private Panel panelBotonera;
-        private DateTimePicker DTP_Desde;
         private Button B_MostrarDetalles;
         private Button B_ActualizarTabla;
         private Button B_ModificarVenta;
         private Button B_CancelarVenta;
         private TextBox TB_BuscarVenta;
         private PictureBox pictureBox1;
-        private Label label2;
-        private Label label1;
-        private DateTimePicker DTP_Hasta;
         private Button B_BuscarPorFecha;
         private Button B_Ticket;
         private Panel panelHost;

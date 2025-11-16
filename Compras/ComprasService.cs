@@ -107,7 +107,7 @@ namespace POS_CHITOS.Compras
 
 
         //Listar compras por fecha desde y hasta
-        public List<CompraDTO> ListarComprasPorFecha(DateTime desde, DateTime hasta)
+        public List<CompraDTO> ListarComprasPorFecha(DateTime desde, DateTime hasta, bool incluirCanceladas)
         {
             var compras = _context.Compras
                 .Include(c => c.Proveedor)

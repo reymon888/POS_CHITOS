@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -50,6 +51,32 @@ namespace POS_CHITOS
                 _lista.Dock = DockStyle.Fill;
             }
             MostrarLista(); // pinta la grilla en el host
+        }
+
+        private void ConfigurarPermisos()
+        {
+            if (_usuarioActual.Rol == "Cajero")
+            {
+                // Deshabilitar botones para Cajero
+                B_ModificarVenta.Enabled = false;
+                B_CancelarVenta.Enabled = false;
+                B_ModificarVenta.Visible = false;
+                B_CancelarVenta.Visible = false;
+
+
+
+                // El botón B_BuscarPorFecha puede quedar visible si quieres que cajeros busquen fechas
+                // O puedes ocultarlo también:
+                B_BuscarPorFecha.Enabled = false;
+                B_BuscarPorFecha.Visible = false;
+            }
+            else
+            {
+
+                // El botón SÍ queda visible
+                B_BuscarPorFecha.Visible = true;
+                B_BuscarPorFecha.Enabled = true;
+            }
         }
         private void MostrarLista()
         {
@@ -254,47 +281,130 @@ namespace POS_CHITOS
 
         private void B_BuscarPorFecha_Click(object sender, EventArgs e)
         {
-            DateTime desde = DTP_Desde.Value.Date;
-            DateTime hasta = DTP_Hasta.Value.Date;
-
-            // Obtener ventas filtradas por fechas
-            var ventasFiltradas = ventasService.ObtenerVentasPorFecha(desde, hasta);
-
-            // Cargar ventas filtradas en el DataGridView
-            CargarVentas(ventasFiltradas);
-        }
-
-        private void B_ActualizarTabla_Click(object sender, EventArgs e)
-        {
-            CargarVentas();
-        }
-
-        // Método para configurar los permisos según el rol del usuario
-        private void ConfigurarPermisos()
-        {
-            if (_usuarioActual.Rol == "Cajero")
+            // Crear Form para seleccionar rango de fechas
+            using (var formFechas = new Form())
             {
-                // Deshabilitar los botones de modificar y cancelar ventas para el Cajero normal
-                B_ModificarVenta.Enabled = false;
-                B_CancelarVenta.Enabled = false;
+                formFechas.Text = "Buscar por Rango de Fechas";
+                formFechas.Size = new Size(400, 240);
+                formFechas.StartPosition = FormStartPosition.CenterParent;
+                formFechas.FormBorderStyle = FormBorderStyle.FixedDialog;
+                formFechas.MaximizeBox = false;
+                formFechas.MinimizeBox = false;
 
-                B_ModificarVenta.Visible = false;
-                B_CancelarVenta.Visible = false;
+                var lblDesde = new System.Windows.Forms.Label
+                {
+                    Text = "Fecha Desde:",
+                    Location = new Point(20, 20),
+                    Size = new Size(100, 25),
+                    Font = new Font("Segoe UI", 11)
+                };
 
-                DTP_Desde.Enabled = false;
-                DTP_Hasta.Enabled = false;
+                var dtpDesde = new DateTimePicker
+                {
+                    Location = new Point(130, 18),
+                    Size = new Size(240, 30),
+                    Font = new Font("Segoe UI", 10),
+                    Format = DateTimePickerFormat.Short,
+                    Value = DateTime.Now.AddMonths(-1) // Default: último mes
+                };
 
-                B_BuscarPorFecha.Enabled = false;
+                var lblHasta = new System.Windows.Forms.Label
+                {
+                    Text = "Fecha Hasta:",
+                    Location = new Point(20, 65),
+                    Size = new Size(100, 25),
+                    Font = new Font("Segoe UI", 11)
+                };
 
-                DTP_Desde.Visible = false;
-                DTP_Hasta.Visible = false;
+                var dtpHasta = new DateTimePicker
+                {
+                    Location = new Point(130, 63),
+                    Size = new Size(240, 30),
+                    Font = new Font("Segoe UI", 10),
+                    Format = DateTimePickerFormat.Short,
+                    Value = DateTime.Now
+                };
 
-                B_BuscarPorFecha.Visible = false;
+                var chkIncluirCanceladas = new CheckBox
+                {
+                    Text = "Incluir ventas canceladas",
+                    Location = new Point(20, 110),
+                    Size = new Size(350, 25),
+                    Font = new Font("Segoe UI", 10),
+                    Checked = false
+                };
 
-                label1.Visible = false;
-                label2.Visible = false;
+                var btnBuscar = new Button
+                {
+                    Text = "Buscar",
+                    Location = new Point(180, 155),
+                    Size = new Size(100, 35),
+                    DialogResult = DialogResult.OK,
+                    Font = new Font("Segoe UI", 10),
+                    BackColor = Color.FromArgb(0, 122, 204),
+                    ForeColor = Color.White,
+                    FlatStyle = FlatStyle.Flat
+                };
 
+                var btnCancelar = new Button
+                {
+                    Text = "Cancelar",
+                    Location = new Point(290, 155),
+                    Size = new Size(100, 35),
+                    DialogResult = DialogResult.Cancel,
+                    Font = new Font("Segoe UI", 10)
+                };
 
+                formFechas.Controls.AddRange(new Control[] {
+            lblDesde, dtpDesde, lblHasta, dtpHasta, chkIncluirCanceladas, btnBuscar, btnCancelar
+        });
+                formFechas.AcceptButton = btnBuscar;
+                formFechas.CancelButton = btnCancelar;
+
+                // Validación de fechas
+                btnBuscar.Click += (s, ev) =>
+                {
+                    if (dtpDesde.Value.Date > dtpHasta.Value.Date)
+                    {
+                        CustomMessageBox.Show("La fecha 'Desde' no puede ser mayor que 'Hasta'.", "Fechas inválidas");
+                        ev = null; // Prevenir cierre
+                        formFechas.DialogResult = DialogResult.None;
+                    }
+                };
+
+                if (formFechas.ShowDialog() != DialogResult.OK)
+                    return;
+
+                DateTime desde = dtpDesde.Value.Date;
+                DateTime hasta = dtpHasta.Value.Date.AddDays(1).AddSeconds(-1); // Incluir todo el día
+
+                // Buscar ventas en el rango
+                var ventasPorFecha = ventasService.ObtenerVentasPorFecha(desde, hasta, chkIncluirCanceladas.Checked);
+
+                if (ventasPorFecha.Count == 0)
+                {
+                    CustomMessageBox.Show(
+                        $"No se encontraron ventas entre {desde:dd/MMM/yyyy} y {dtpHasta.Value.Date:dd/MMM/yyyy}",
+                        "Sin resultados"
+                    );
+                    return;
+                }
+
+                // Salir de otros modos
+                _mostrandoHistorialPlaca = false;
+                _mostrandoEnEspera = false;
+                B_VentaEspera.Text = "Ventas en Espera";
+                B_BuscarPlaca.Text = "Buscar por Placa";
+                TB_BuscarVenta.Clear();
+
+                CargarVentas(ventasPorFecha);
+                Toast.Show(
+                    this,
+                    $"Encontradas {ventasPorFecha.Count} ventas ({desde:dd/MMM} - {dtpHasta.Value.Date:dd/MMM})",
+                    ToastType.Success,
+                    2500,
+                    ToastPosition.TopRight
+                );
             }
         }
 
@@ -649,7 +759,7 @@ namespace POS_CHITOS
                 formPlaca.MaximizeBox = false;
                 formPlaca.MinimizeBox = false;
 
-                var lblMensaje = new Label
+                var lblMensaje = new System.Windows.Forms.Label
                 {
                     Text = "Ingresa la placa del vehículo:",
                     Location = new Point(20, 20),
@@ -742,8 +852,13 @@ namespace POS_CHITOS
             CargarVentas();
             Toast.Show(this, "Regresando a ventas del día.", ToastType.Info, 1600, ToastPosition.TopRight);
         }
+
+        private void B_ActualizarTabla_Click(object sender, EventArgs e)
+        {
+            CargarVentas();
+        }
     }
-    }
+}
 
 
 

@@ -43,6 +43,7 @@
             Proveedor = new Label();
             TB_Proveedor = new TextBox();
             panel1 = new Panel();
+            B_Cerrar = new Button();
             TB_TotalCompra = new TextBox();
             ((System.ComponentModel.ISupportInitialize)DGV_DetallesCompras).BeginInit();
             panelSuperior.SuspendLayout();
@@ -57,13 +58,14 @@
             DGV_DetallesCompras.BackgroundColor = SystemColors.ControlLightLight;
             DGV_DetallesCompras.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             DGV_DetallesCompras.Dock = DockStyle.Fill;
-            DGV_DetallesCompras.Location = new Point(0, 153);
+            DGV_DetallesCompras.Location = new Point(0, 115);
+            DGV_DetallesCompras.Margin = new Padding(3, 2, 3, 2);
             DGV_DetallesCompras.MultiSelect = false;
             DGV_DetallesCompras.Name = "DGV_DetallesCompras";
             DGV_DetallesCompras.ReadOnly = true;
             DGV_DetallesCompras.RowHeadersWidth = 51;
             DGV_DetallesCompras.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            DGV_DetallesCompras.Size = new Size(1370, 527);
+            DGV_DetallesCompras.Size = new Size(1199, 395);
             DGV_DetallesCompras.TabIndex = 6;
             // 
             // panelSuperior
@@ -82,14 +84,16 @@
             panelSuperior.Controls.Add(TB_Proveedor);
             panelSuperior.Dock = DockStyle.Top;
             panelSuperior.Location = new Point(0, 0);
+            panelSuperior.Margin = new Padding(3, 2, 3, 2);
             panelSuperior.Name = "panelSuperior";
-            panelSuperior.Size = new Size(1370, 153);
+            panelSuperior.Size = new Size(1199, 115);
             panelSuperior.TabIndex = 5;
             // 
             // pictureBox1
             // 
             pictureBox1.Image = Properties.Resources.servicio_al_cliente;
-            pictureBox1.Location = new Point(17, 37);
+            pictureBox1.Location = new Point(15, 28);
+            pictureBox1.Margin = new Padding(3, 2, 3, 2);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(32, 32);
             pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
@@ -99,7 +103,8 @@
             // pictureBox3
             // 
             pictureBox3.Image = Properties.Resources.factura;
-            pictureBox3.Location = new Point(1087, 42);
+            pictureBox3.Location = new Point(951, 32);
+            pictureBox3.Margin = new Padding(3, 2, 3, 2);
             pictureBox3.Name = "pictureBox3";
             pictureBox3.Size = new Size(32, 32);
             pictureBox3.SizeMode = PictureBoxSizeMode.AutoSize;
@@ -109,7 +114,8 @@
             // pictureBox2
             // 
             pictureBox2.Image = Properties.Resources.servicio_al_cliente;
-            pictureBox2.Location = new Point(17, 105);
+            pictureBox2.Location = new Point(15, 79);
+            pictureBox2.Margin = new Padding(3, 2, 3, 2);
             pictureBox2.Name = "pictureBox2";
             pictureBox2.Size = new Size(32, 32);
             pictureBox2.SizeMode = PictureBoxSizeMode.AutoSize;
@@ -120,28 +126,29 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Arial", 12F);
-            label3.Location = new Point(574, 37);
+            label3.Location = new Point(502, 28);
             label3.Name = "label3";
-            label3.Size = new Size(191, 23);
+            label3.Size = new Size(151, 18);
             label3.TabIndex = 8;
             label3.Text = "Fecha de la compra:";
             // 
             // TB_Usuario
             // 
             TB_Usuario.Font = new Font("Segoe UI", 12F);
-            TB_Usuario.Location = new Point(55, 105);
+            TB_Usuario.Location = new Point(48, 79);
+            TB_Usuario.Margin = new Padding(3, 2, 3, 2);
             TB_Usuario.Name = "TB_Usuario";
             TB_Usuario.ReadOnly = true;
-            TB_Usuario.Size = new Size(292, 34);
+            TB_Usuario.Size = new Size(256, 29);
             TB_Usuario.TabIndex = 7;
             // 
             // label2
             // 
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI", 12F);
-            label2.Location = new Point(93, 76);
+            label2.Location = new Point(81, 57);
             label2.Name = "label2";
-            label2.Size = new Size(215, 28);
+            label2.Size = new Size(171, 21);
             label2.TabIndex = 6;
             label2.Text = "Compra registrada por:";
             // 
@@ -149,78 +156,105 @@
             // 
             label1.AutoSize = true;
             label1.Font = new Font("Segoe UI", 12F);
-            label1.Location = new Point(1159, 9);
+            label1.Location = new Point(1014, 7);
             label1.Name = "label1";
-            label1.Size = new Size(126, 28);
+            label1.Size = new Size(100, 21);
             label1.TabIndex = 5;
             label1.Text = "FolioCompra";
             // 
             // TB_IdCompra
             // 
             TB_IdCompra.Font = new Font("Segoe UI", 12F);
-            TB_IdCompra.Location = new Point(1125, 40);
+            TB_IdCompra.Location = new Point(984, 30);
+            TB_IdCompra.Margin = new Padding(3, 2, 3, 2);
             TB_IdCompra.Name = "TB_IdCompra";
             TB_IdCompra.ReadOnly = true;
-            TB_IdCompra.Size = new Size(233, 34);
+            TB_IdCompra.Size = new Size(204, 29);
             TB_IdCompra.TabIndex = 4;
             // 
             // dateTimePicker1
             // 
             dateTimePicker1.Enabled = false;
             dateTimePicker1.Font = new Font("Arial", 12F);
-            dateTimePicker1.Location = new Point(494, 63);
+            dateTimePicker1.Location = new Point(432, 47);
+            dateTimePicker1.Margin = new Padding(3, 2, 3, 2);
             dateTimePicker1.Name = "dateTimePicker1";
-            dateTimePicker1.Size = new Size(368, 30);
+            dateTimePicker1.Size = new Size(322, 26);
             dateTimePicker1.TabIndex = 3;
             // 
             // Proveedor
             // 
             Proveedor.AutoSize = true;
             Proveedor.Font = new Font("Segoe UI", 12F);
-            Proveedor.Location = new Point(145, 6);
+            Proveedor.Location = new Point(127, 4);
             Proveedor.Name = "Proveedor";
-            Proveedor.Size = new Size(103, 28);
+            Proveedor.Size = new Size(82, 21);
             Proveedor.TabIndex = 2;
             Proveedor.Text = "Proveedor";
             // 
             // TB_Proveedor
             // 
             TB_Proveedor.Font = new Font("Segoe UI", 12F);
-            TB_Proveedor.Location = new Point(55, 37);
+            TB_Proveedor.Location = new Point(48, 28);
+            TB_Proveedor.Margin = new Padding(3, 2, 3, 2);
             TB_Proveedor.Name = "TB_Proveedor";
             TB_Proveedor.ReadOnly = true;
-            TB_Proveedor.Size = new Size(292, 34);
+            TB_Proveedor.Size = new Size(256, 29);
             TB_Proveedor.TabIndex = 1;
             // 
             // panel1
             // 
             panel1.BackColor = Color.FromArgb(51, 51, 51);
+            panel1.Controls.Add(B_Cerrar);
             panel1.Controls.Add(TB_TotalCompra);
             panel1.Dock = DockStyle.Bottom;
-            panel1.Location = new Point(0, 601);
+            panel1.Location = new Point(0, 451);
+            panel1.Margin = new Padding(3, 2, 3, 2);
             panel1.Name = "panel1";
-            panel1.Size = new Size(1370, 79);
+            panel1.Size = new Size(1199, 59);
             panel1.TabIndex = 7;
+            // 
+            // B_Cerrar
+            // 
+            B_Cerrar.BackColor = SystemColors.ControlLightLight;
+            B_Cerrar.Cursor = Cursors.Hand;
+            B_Cerrar.Dock = DockStyle.Left;
+            B_Cerrar.FlatAppearance.BorderSize = 0;
+            B_Cerrar.FlatStyle = FlatStyle.Flat;
+            B_Cerrar.Font = new Font("Segoe UI", 12F);
+            B_Cerrar.ForeColor = Color.FromArgb(44, 140, 153);
+            B_Cerrar.Image = Properties.Resources.rechazar__1_;
+            B_Cerrar.Location = new Point(0, 0);
+            B_Cerrar.Margin = new Padding(3, 2, 3, 2);
+            B_Cerrar.Name = "B_Cerrar";
+            B_Cerrar.Size = new Size(94, 59);
+            B_Cerrar.TabIndex = 7;
+            B_Cerrar.Text = "Salir";
+            B_Cerrar.TextImageRelation = TextImageRelation.ImageAboveText;
+            B_Cerrar.UseVisualStyleBackColor = false;
+            B_Cerrar.Click += B_Cerrar_Click;
             // 
             // TB_TotalCompra
             // 
             TB_TotalCompra.Dock = DockStyle.Right;
             TB_TotalCompra.Font = new Font("Arial Rounded MT Bold", 36F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            TB_TotalCompra.Location = new Point(1086, 0);
+            TB_TotalCompra.Location = new Point(950, 0);
+            TB_TotalCompra.Margin = new Padding(3, 2, 3, 2);
             TB_TotalCompra.Name = "TB_TotalCompra";
             TB_TotalCompra.ReadOnly = true;
-            TB_TotalCompra.Size = new Size(284, 77);
+            TB_TotalCompra.Size = new Size(249, 63);
             TB_TotalCompra.TabIndex = 0;
             // 
             // V_MostrarDetallesCompras
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
+            AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1370, 680);
+            ClientSize = new Size(1199, 510);
             Controls.Add(panel1);
             Controls.Add(DGV_DetallesCompras);
             Controls.Add(panelSuperior);
             Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(3, 2, 3, 2);
             Name = "V_MostrarDetallesCompras";
             Text = "Detalles de la compra";
             ((System.ComponentModel.ISupportInitialize)DGV_DetallesCompras).EndInit();
@@ -257,5 +291,6 @@
         private PictureBox pictureBox1;
         private PictureBox pictureBox3;
         private PictureBox pictureBox2;
+        private Button B_Cerrar;
     }
 }

@@ -23,12 +23,15 @@ namespace POS_CHITOS
         private readonly ProveedoresService _proveedoresService;
         private readonly inventarioService _inventarioService;
         private readonly int _idCompra;
+        private readonly Action<bool>? _onClose;
 
-        public V_ModificarCompra(int idCompra)
+
+        public V_ModificarCompra(int idCompra, Action<bool>? onClose = null)
         {
             InitializeComponent();
 
             _idCompra = idCompra;
+            _onClose = onClose;
             var context = new POSContext(new DbContextOptions<POSContext>());
             _compraService = new ComprasService(context);
             _proveedoresService = new ProveedoresService(context);
@@ -43,6 +46,19 @@ namespace POS_CHITOS
 
 
         }
+        private void Finalizar(bool refrescar)
+        {
+            if (TopLevel)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+            else
+            {
+                _onClose?.Invoke(refrescar);
+            }
+        }
+
 
         private void ConfigurarAutoCompleteProveedor()
         {
@@ -358,7 +374,7 @@ namespace POS_CHITOS
                 CustomMessageBox.Show("Los cambios han sido guardados correctamente.", "Éxito");
 
                 // Cerrar el formulario después de guardar los cambios
-                this.Close();
+                Finalizar(true);
             }
             catch (Exception ex)
             {
@@ -372,7 +388,7 @@ namespace POS_CHITOS
             DialogResult result = CustomMessageBox.Show("¿Está seguro que desea cancelar la modificación de la compra?", "Cancelar");
             if (result == DialogResult.Yes)
             {
-                this.Close();
+                Finalizar(true);
             }
 
         }

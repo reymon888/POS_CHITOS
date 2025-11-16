@@ -19,18 +19,33 @@ namespace POS_CHITOS
         private readonly int _idCompra;
         private readonly ComprasService _comprasService;
         private readonly ProveedoresService _proveedoresService;
+        private readonly Action<bool>? _onClose;
 
-        public V_MostrarDetallesCompras(int idCompra)
+        public V_MostrarDetallesCompras(int idCompra, Action<bool>? onClose = null)
         {
             InitializeComponent();
 
             _idCompra = idCompra;
+            _onClose = onClose;
             var context = new POSContext(new DbContextOptions<POSContext>());
             _comprasService = new ComprasService(context);
             _proveedoresService = new ProveedoresService(context);
 
             // Cargar los detalles de la compra y los datos de la cabecera
             CargarDatosCompra(_idCompra);
+        }
+
+        private void Finalizar(bool refrescar)
+        {
+            if (TopLevel)
+            {
+                DialogResult = DialogResult.OK;
+                Close();
+            }
+            else
+            {
+                _onClose?.Invoke(refrescar);
+            }
         }
 
         private void B_ActualizarTabla_Click(object sender, EventArgs e)
@@ -150,5 +165,9 @@ namespace POS_CHITOS
                 TB_TotalCompra.Text = totalCompra.ToString("C2");
             }
         }
+
+        private void B_Cerrar_Click(object sender, EventArgs e)
+    => Finalizar(false);
+
     }
 }
